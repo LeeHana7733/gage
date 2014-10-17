@@ -48,4 +48,15 @@
 			SYSDATE
 		)
 	</insert>
+	<select id="historyList" parameterType="string" resultType="history">
+		SELECT 	OID, 
+					SPD_DATE, 
+					SPD_AMOUNT, 
+					SPD_HISTORY, 
+					SPD_MEMO, 
+					SPD_CATEGORY, 
+					SPD_PAYMENT
+		FROM		AC_HISTORY	
+		WHERE  	SPD_DATE	 = 	TO_DATE(#{date} , 'YYYY-MM-DD') 		
+	</select>
 </mapper>

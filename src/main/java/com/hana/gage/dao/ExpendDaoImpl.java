@@ -16,10 +16,11 @@ public class ExpendDaoImpl extends SqlSessionDaoSupport implements ExpendDao {
 		return getSqlSession().insert("history.insertHistory" , hist);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public List<HistoryVO> histList(String month) {
+	public List<HistoryVO> histList(String date) {
 		// TODO Auto-generated method stub
-		return null;
+		return getSqlSession().selectList("history.historyList",date);
 	}
 
 }

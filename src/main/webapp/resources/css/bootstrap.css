@@ -2012,7 +2012,9 @@ textarea.input-lg {
        -o-user-select: none;
           user-select: none;
 }
-
+.btn.fix{
+	width:150px;
+}
 .btn:focus {
   outline: thin dotted #333;
   outline: 5px auto -webkit-focus-ring-color;
@@ -5699,6 +5701,10 @@ body.modal-open,
   margin-top: 15px;
   text-align: right;
   border-top: 1px solid #e5e5e5;
+}
+
+.modal-footer.center {
+  text-align: center;
 }
 
 .modal-footer:before,

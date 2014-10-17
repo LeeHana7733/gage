@@ -4,4 +4,21 @@
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <!-- Root Context: defines shared resources visible to all other web components -->
+    <bean id="beanNameResolver" class="org.springframework.web.servlet.view.BeanNameViewResolver">
+    	<property name="order" value="0"/>
+    </bean>
+    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+	    <property name="messageConverters">
+	        <list>
+	            <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+	                <property name="supportedMediaTypes">
+	                    <list>
+	                        <value>text/html;charset=UTF-8</value>
+	                    </list>
+	                </property>
+	            </bean>
+	        </list>
+	    </property>
+	</bean>
+	<bean id="jsonView" class="net.sf.json.spring.web.servlet.view.JsonView"/>
 </beans>

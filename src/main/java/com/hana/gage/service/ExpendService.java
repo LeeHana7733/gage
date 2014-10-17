@@ -8,6 +8,6 @@ import com.hana.gage.domain.HistoryVO;
 
 @Transactional
 public interface ExpendService {
-	public int insertHistory(HistoryVO hist);
-	public List<HistoryVO> histList(String month);
+	public String insertHistory(HistoryVO hist);
+	public List<HistoryVO> histList(String date);
 }
