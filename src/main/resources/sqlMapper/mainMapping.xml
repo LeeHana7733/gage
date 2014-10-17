@@ -1,3 +1,51 @@
-<?xml version="1.0" encoding="UTF-8"?>
- 
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="history">
+	<insert id="reg_history">
+		<!-- 지출내역 -->
+		CREATE TABLE AC_HISTORY
+		(
+			 OID VARCHAR2(255),
+			 SPD_DATE DATE,
+			 SPD_AMOUNT NUMBER(20),
+			 SPD_HISTORY VARCHAR2(255),
+			 SPD_MEMO    VARCHAR2(255),
+			 SPD_CATEGORY VARCHAR2(255),
+			 SPD_PAYMENT  VARCHAR2(255),
+			 SPD_UPDATE_DATE DATE,
+			 SPD_CREATE_DATE DATE
+		)
+		<!-- 시퀀스 -->
+		CREATE SEQUENCE  AC_HISTORY_SEQ
+        INCREMENT BY 1
+        START WITH 1 
+        MAXVALUE 1000000
+        NOCACHE
+	</insert>
+	<insert id="insertHistory"  parameterType="history">
+		INSERT INTO AC_HISTORY
+		(	OID, 
+			SPD_DATE, 
+			SPD_AMOUNT, 
+			SPD_HISTORY, 
+			SPD_MEMO, 
+			SPD_CATEGORY, 
+			SPD_PAYMENT, 
+			SPD_UPDATE_DATE, 
+			SPD_CREATE_DATE
+		)
+		VALUES
+		(
+			AC_HISTORY_SEQ.NEXTVAL,
+			to_date(#{spdDate},'yyyy-mm-dd'),
+			${spdAmount},
+			#{spdHistory}, 
+			#{spdMemo}, 
+			#{spdCategory}, 
+			#{spdPayment}, 
+			SYSDATE, 
+			SYSDATE
+		)
+	</insert>
+</mapper>

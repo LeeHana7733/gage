@@ -33,7 +33,7 @@
      
     <!-- SqlSessionTemplate : MyBatis SQL method 호출 및 관리, 예예처리 담당 -->
     <bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
-           <constructor-arg index="0" ref="sqlSessionFactory" />
+           <constructor-arg index="0" ref="sqlSessionFactory" /> 
     </bean>
       
      <!-- 트랜잭션관리자. -->       

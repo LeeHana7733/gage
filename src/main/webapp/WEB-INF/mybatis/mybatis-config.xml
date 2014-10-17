@@ -12,6 +12,7 @@
     <typeAliases>
          <typeAlias alias="hashMap" type="java.util.HashMap" />
          <typeAlias alias="map" type="java.util.Map" />
+         <typeAlias alias="history" type="com.hana.gage.domain.HistoryVO" />
     </typeAliases>    
   
 <!--

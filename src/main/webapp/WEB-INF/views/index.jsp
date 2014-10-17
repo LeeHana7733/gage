@@ -11,6 +11,7 @@
 	<script src="//code.jquery.com/jquery.js"></script>
 	<script src="/resources/js/jquery-ui.custom.min.js"></script>
 	<script type="text/javascript">
+	var timer;
 	$(document).ready(function(){
 		$(".input-group > .btn").mousedown(function(){
 			count=0;
@@ -21,8 +22,20 @@
 		$(".input-group > .btn").mouseup(function() {
 			clearTimeout(timer);
 		});
-		$(".col-sm-11 > div >.btn").click(function(){
-			alert ($(this).next().text());
+		$(".input-group >.btn").click(
+			function(){
+				$(this).parent().parent().parent().parent().children().last().toggleClass("hide");
+			}
+		);
+		$(".modal-footer > .btn").click(function(){
+			$.post("/insertHist" , 
+					$("#modalForm").serialize(),
+					function (result){
+						alert (result.result);
+						  location.reload();
+					},
+					'json'
+			);
 		});
 	});
 	</script>
@@ -54,58 +67,64 @@
 	</div>
 	<div class="container" id="date">
 		<div class="row">
-			<div class="col-sm-1">
-				<button type="button" class="btn btn-primary" disabled="disabled">sample</button>
-			</div>
-			<div class="col-sm-11">
-				<div class="input-group">
-					<button type="button" class="btn btn-default  btn-block">20,400원</button>
+			<div class="row">
+				<div class="col-sm-1">
+					<button type="button" class="btn btn-primary" disabled="disabled">sample</button>
+				</div>
+				<div class="col-sm-11">
+					<div class="input-group">
+						<button type="button" class="btn btn-default  btn-block">20,400원</button>
+					</div>
 				</div>
 			</div>
-			<div class="col-sm-11  col-sm-offset-1 hide">
-					<input type="text" class="form-control">
-					<input type="text" class="form-control">
-					<input type="text" class="form-control">
-					<input type="text" class="form-control">
+			<div class="row bottom hide">
+				<div class="col-sm-12">
+						<input type="text" class="form-control">
+						<input type="text" class="form-control">
+						<input type="text" class="form-control">
+						<input type="text" class="form-control">
+				</div>
 			</div>
 		</div>
 	</div>
 	<div class="modal fade" id="myModal">
-		  <div class="modal-dialog sm">
-		    <div class="modal-content">
-		      <div class="modal-header">
-		        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-		        <h4 class="modal-title">지출내역</h4>
-		      </div>
-		      <div class="modal-body">
-		      	<div class="row bottom">
-		      		<div class="col-sm-4">지출일</div>
-		      		<div class="col-sm-8"><input type="text" class="form-control"></div>
-		      	</div>
-		      	<div class="row bottom">
-		      		<div class="col-sm-4">지출금액</div>
-		      		<div class="col-sm-8"><input type="text" class="form-control"></div>
-		      	</div>
-		      	<div class="row bottom">
-		      		<div class="col-sm-4">지출내역</div>
-		      		<div class="col-sm-8"><input type="text" class="form-control"></div>
-		      	</div>
-		      	<div class="row bottom">
-		      		<div class="col-sm-4">메모</div>
-		      		<div class="col-sm-8"><input type="text" class="form-control"></div>
-		      	</div>
-		      	<div class="row bottom">
-		      		<div class="col-sm-4">분류</div>
-		      		<div class="col-sm-8"><input type="text" class="form-control"></div>
-		      	</div>
-		      </div>
-		      <div class="modal-footer">
-		        <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
-		        <button type="button" class="btn btn-primary">저장</button>
-		      </div>
-		    </div><!-- /.modal-content -->
-		  </div><!-- /.modal-dialog -->
-		</div><!-- /.modal -->
+		<div class="modal-dialog sm">
+			<div class="modal-content">
+		    	<div class="modal-header">
+		      		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+		      		<h4 class="modal-title">지출내역</h4>
+		    	</div>
+			    <div class="modal-body">
+			    	<form role="form" id="modalForm">
+				    	<div class="row bottom">
+				    		<div class="col-sm-4">지출일</div>
+				    		<div class="col-sm-8"><input type="text" name="spdDate" class="form-control"></div>
+				    	</div>
+				    	<div class="row bottom">
+				    		<div class="col-sm-4">지출금액</div>
+				    		<div class="col-sm-8"><input type="text" name="spdAmount" class="form-control"></div>
+				    	</div>
+				    	<div class="row bottom">
+				    		<div class="col-sm-4">지출내역</div>
+				    		<div class="col-sm-8"><input type="text" name="spdHistory" class="form-control"></div>
+				    	</div>
+				    	<div class="row bottom">
+				    		<div class="col-sm-4">메모</div>
+				    		<div class="col-sm-8"><input type="text" name="spdMemo" class="form-control"></div>
+				    	</div>
+				    	<div class="row bottom">
+				    		<div class="col-sm-4">분류</div>
+				    		<div class="col-sm-8"><input type="text" name="spdCategory"  class="form-control"></div>
+				    	</div>
+			    	</form>
+			    </div>
+			    <div class="modal-footer">
+			      	<button type="button" class="btn btn-primary">저장</button>
+			      	<button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
+			    </div>
+		  	</div><!-- /.modal-content -->
+		</div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
     <script src="/resources/js/bootstrap.min.js"></script>
   </body>
 </html>
