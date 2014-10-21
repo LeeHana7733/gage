@@ -17,7 +17,7 @@
     </bean>
  
     <!-- DBCP를 위한 DataSource 객체 -->
-    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
         <property name="driverClassName" value="${jdbc.driverClass}"/>
         <property name="url" value="${jdbc.url}"/>
         <property name="username" value="${jdbc.username}"/>
@@ -31,18 +31,16 @@
          <property name="mapperLocations" value="classpath:sqlMapper/*.xml" />
     </bean>
      
-    <!-- SqlSessionTemplate : MyBatis SQL method 호출 및 관리, 예예처리 담당 -->
     <bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
-           <constructor-arg index="0" ref="sqlSessionFactory" /> 
-    </bean>
-      
-     <!-- 트랜잭션관리자. -->       
-    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-        <property name="dataSource" ref="dataSource" />
-    </bean>
-     
-    <!-- 트랜잭션과 관련된 작업(트랜잭션시작, 커및, 롤백등) -->
-    <bean id="transactionTemplate" class="org.springframework.transaction.support.TransactionTemplate">
-         <property name="transactionManager" ref="transactionManager" />
-     </bean>
+	  <constructor-arg index="0" ref="sqlSessionFactory" />
+	</bean>
+	 
+	<!-- 트랜잭션 매니저 -->
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"/>
+	</bean>
+	
+	<!-- Annotation 기반 트랜잭션 설정 -->
+	<tx:annotation-driven transaction-manager="transactionManager" />
+	 
 </beans>

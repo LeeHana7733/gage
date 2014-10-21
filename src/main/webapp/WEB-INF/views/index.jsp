@@ -12,47 +12,41 @@
     <link rel="stylesheet" href="//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css">
 	<script src="//code.jquery.com/jquery.js"></script>
 	<script src="/resources/js/jquery-ui.custom.min.js"></script>
+	<script src="/resources/js/jquery-number.js"></script>
 	<script src="//code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
 	<script type="text/javascript">
 	var timer;
 	$(document).ready(function(){
 		$(".input-group > .btn").mousedown(function(){
 			count=0;
+			var el	=	$(this);
 			timer = setTimeout(function () {
 				$("#myModal").modal();
+				 $("input[name*='spdDate']").val(el.parents(".row").children().first().text().trim());
 			}, 1000);
 		});
 		$(".input-group > .btn").mouseup(function() {
 			clearTimeout(timer);
 		});
 		$(".input-group >.btn").click(function(){
-				var value = $(this).parent().parent().parent().children().first().text();
-				var lastNode= $(this).parent().parent().parent().parent().children().last().first();
-				$.post(value, 
-						"",
-						function(data){
-							if (data.result != ""){
-								$.each(data.result , function (i, val){
-									lastNode.html("<input type=\"text\"  class=\"form-control\" value=\""+val.spdHistory+"\" >");
-								});
-							}else{
-								lastNode.html("<input type=\"text\"  class=\"form-control\" value=\"작성된 지출내역이 없습니다.\" >");
-							}
-						},
-						"json"
-				);
-				$(this).parent().parent().parent().parent().children().last().toggleClass("hide");
+				var value = $(this).parents(".row").children().first().text();
+				var lastNode= $(this).parents(".row").next().children().first();
+				$.getHistInfo(value , lastNode);
+				$(this).parents(".row").next().toggleClass("hide");
 		});
 		$(".modal-footer > .btn-primary").click(function(){
+			var dateVal	= $("input[name*='spdDate']").val();
 			$.post("/insertHist" , 
 					$("#modalForm").serialize(),
 					function (data){
 						$("#myModal").modal("hide");
 						$('#myModal').on('hidden.bs.modal', function () {
 							$("form")[0].reset();
-							$("#alertModal > div > div>.modal-body").text(data.result);
-							$("#alertModal").modal();
 						});
+						$("#alertModal > div > div>.modal-body").text(data.result);
+						$("#alertModal").modal();
+						$.getHistInfo(dateVal ,$("button[data-date='"+ dateVal + "']").parents(".row").next().children().first());	
+						$("button[data-date='"+ dateVal + "']").parent().next().children().children().text($.number(data.total) + "원");
 					},
 					'json'
 			);
@@ -69,6 +63,23 @@
 		    showMonthAfterYear: true,
 		    yearSuffix: '년'
 		  });
+		$.getHistInfo = function (value ,lastNode) {
+			var html	= "";
+			$.post("/data/"+value, 
+					"",
+					function(data){
+						if (data.result != ""){
+							$.each(data.result , function (i, val){
+								html += "<input type=\"text\"  class=\"form-control\" value=\""+$.number(val.spdAmount)+" 원\" >";
+							});
+						}else{
+							html	="<input type=\"text\"  class=\"form-control\" value=\"작성된 지출내역이 없습니다.\" >";
+						}
+						lastNode.html(html);
+					},
+					"json"
+			);
+		}
 	});
 	</script>
   </head>
@@ -85,9 +96,9 @@
 	<div class="container">
 		<div class="row all">
 		 	<div class="col-sm-1 col-sm-offset-3"><span class="glyphicon glyphicon-chevron-left"></span></div>
-		 	<div class="col-sm-2" id="full_date"></div>
+		 	<div class="col-sm-2" id="full_date">${date}</div>
 		 	<div class="col-sm-1"><span class="glyphicon glyphicon-chevron-right"></span></div>
-			<div class="col-sm-1 col-sm-offset-2">0$ / 일 </div>		
+			<div class="col-sm-2 col-sm-offset-2"><fmt:formatNumber type="number" pattern="###,###" value="${totalAmount}" />원</div>		
 		</div>
 	</div>
 	<div class="container">
@@ -98,19 +109,17 @@
 		</div>
 	</div>
 	<div class="container" id="date">
-		<c:forEach var="i" begin="1" end="${lastDay}" step="1">
-			<div class="row">
-				<div class="row">
+		<c:forEach var="data" items="${totalDate}">
+			<div class="row" >
+				<div class="row" >
 					<div class="col-sm-2">
-						<button type="button" class="btn btn-primary" disabled="disabled">
-							<fmt:formatNumber var="conI" value="${i}" pattern="00"/>
-							<fmt:parseDate value='201410${conI}' var='topDate' pattern="yyyyMMdd" />
-							<fmt:formatDate value="${topDate}" type="date" pattern="yyyy-MM-dd"/>
+						<button type="button" class="btn btn-primary" disabled="disabled" data-date ="${data.SPD_DATE}">
+							${data.SPD_DATE}
 						</button>
 					</div>
 					<div class="col-sm-9">
 						<div class="input-group">
-							<button type="button" class="btn fix btn-default ">0원</button>
+							<button type="button" class="btn fix btn-default "><fmt:formatNumber type="number" pattern="###,###" value="${data.SPD_AMOUNT}" />원</button>
 						</div>
 					</div>
 				</div>

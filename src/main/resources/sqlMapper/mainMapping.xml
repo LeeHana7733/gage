@@ -48,7 +48,23 @@
 			SYSDATE
 		)
 	</insert>
-	<select id="historyList" parameterType="string" resultType="history">
+	<select id="historyList" parameterType="string" resultType="hashmap">
+		<![CDATA[
+		SELECT	TO_CHAR(A.TOTAL_DT , 'yyyy-mm-dd') AS SPD_DATE,
+					NVL( SUM(B.SPD_AMOUNT) , '0') SPD_AMOUNT
+		FROM     (	SELECT	TRUNC (START_DT + LEVEL, 'DD')-1 TOTAL_DT
+	         			FROM     (	SELECT 	TRUNC( TO_DATE(#{date},'yyyy-mm-dd'), 'MM') START_DT
+	              						FROM		DUAL)
+	             		CONNECT BY LEVEL <= TO_CHAR(LAST_DAY(START_DT), 'DD')
+	             	) A ,
+	           		AC_HISTORY  B
+		WHERE	TO_CHAR(A.TOTAL_DT ,'YYYYMMDD') = TO_CHAR(B.SPD_DATE(+) , 'YYYYMMDD')
+		GROUP BY TOTAL_DT
+		ORDER BY TOTAL_DT
+		]]>
+	</select>
+	
+	<select id="historyInfo" parameterType="string" resultType="history">
 		SELECT 	OID, 
 					SPD_DATE, 
 					SPD_AMOUNT, 
@@ -57,6 +73,22 @@
 					SPD_CATEGORY, 
 					SPD_PAYMENT
 		FROM		AC_HISTORY	
-		WHERE  	SPD_DATE	 = 	TO_DATE(#{date} , 'YYYY-MM-DD') 		
+		WHERE  	SPD_DATE	 = 	TO_DATE(#{date} , 'YYYY-MM-DD') 
+		ORDER BY	SPD_DATE		
+	</select>
+	
+	<select id="totalAmount" parameterType="hashmap" resultType="string">
+		SELECT	SUM(SPD_AMOUNT) AS AA
+		FROM		AC_HISTORY
+		WHERE	1=1
+		<choose>
+			<when test="type eq 'D'.toString()">
+				AND	SPD_DATE	=	TO_DATE(#{date} , 'yyyy-mm-dd')
+			</when>
+			<when test="type eq 'M'.toString()">
+				AND 	TO_CHAR(SPD_DATE , 'MONTH') 	=	TO_CHAR(TO_DATE(#{date}), 'MONTH')
+			</when>
+		</choose>
+		
 	</select>
 </mapper>

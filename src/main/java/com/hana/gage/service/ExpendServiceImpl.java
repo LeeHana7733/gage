@@ -1,5 +1,6 @@
 package com.hana.gage.service;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +24,18 @@ public class ExpendServiceImpl implements ExpendService{
 		return result;
 	}
 	@Override
-	public List<HistoryVO> histList(String date) {
+	public List<HashMap<String,String>> histList(String date) {
 		return expendDao.histList(date);
+	}
+	@Override
+	public String totalAmount(String date ,String type) {
+		// TODO Auto-generated method stub
+		return expendDao.totalAmount(date , type);
+	}
+	@Override
+	public List<HistoryVO> histInfo(String date) {
+		// TODO Auto-generated method stub
+		return expendDao.histInfo(date);
 	}
 
 }
