@@ -1,14 +1,29 @@
 package com.hana.gage.domain;
 
 public class HistoryVO {
-	private String 	spdDate		=""; 
-	private int 		spdAmount 	=0 ;
-	private String 	spdHistory	=""; 
-	private String 	spdMemo	=""; 
-	private String 	spdCategory	=""; 
-	private int 		spdPayment	=0; 
-	private String 	spdUpdate_date	=""; 
-	private String 	spdCreate_date	="";
+	private String	oid				= "";
+	private String 	spdDate		= ""; 
+	private int 		spdAmount 	= 0 ;
+	private String 	spdHistory	= ""; 
+	private String 	spdMemo	= ""; 
+	private String 	spdCategory	= ""; 
+	private String	spdPayment	= "0"; 
+	private String 	spdUpdate_date	= ""; 
+	private String 	spdCreate_date	= "";
+	private String	spdTime		= "";
+	
+	public String getSpdTime() {
+		return spdTime;
+	}
+	public void setSpdTime(String spdTime) {
+		this.spdTime = spdTime;
+	}
+	public String getOid() {
+		return oid;
+	}
+	public void setOid(String oid) {
+		this.oid = oid;
+	}
 	public String getSpdDate() {
 		return spdDate;
 	}
@@ -39,10 +54,10 @@ public class HistoryVO {
 	public void setSpdCategory(String spdCategory) {
 		this.spdCategory = spdCategory;
 	}
-	public int getSpdPayment() {
+	public String getSpdPayment() {
 		return spdPayment;
 	}
-	public void setSpdPayment(int spdPayment) {
+	public void setSpdPayment(String spdPayment) {
 		this.spdPayment = spdPayment;
 	}
 	public String getSpdUpdate_date() {

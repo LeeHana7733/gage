@@ -15,12 +15,11 @@ public class ExpendServiceImpl implements ExpendService{
 	@Autowired
 	private ExpendDao	expendDao;
 	@Override
-	public String insertHistory(HistoryVO hist) {
+	public String mergeHistory(HistoryVO hist) {
 		String result	= "결제내역이 실패하였습니다";
-		if (expendDao.insertHistory(hist) == 1){
+		if (expendDao.mergeHistory(hist) == 1){
 			result	= "결제내역이 저장되었습니다.";
 		}
-		System.out.println(result);
 		return result;
 	}
 	@Override
@@ -33,9 +32,17 @@ public class ExpendServiceImpl implements ExpendService{
 		return expendDao.totalAmount(date , type);
 	}
 	@Override
-	public List<HistoryVO> histInfo(String date) {
+	public List<HistoryVO> histInfo(HashMap<String,String> map) {
 		// TODO Auto-generated method stub
-		return expendDao.histInfo(date);
+		return expendDao.histInfo(map);
+	}
+	@Override
+	public String deleteHist(String oid) {
+		// TODO Auto-generated method stub
+		String result	= "결제내역 삭제가 실패하였습니다";
+		if (expendDao.deleteHist(oid) ==1 )
+			result	= "결제내역 삭제 되었습니다.";
+		return result;
 	}
 
 }

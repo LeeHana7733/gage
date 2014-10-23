@@ -3,6 +3,7 @@ package com.hana.gage.controller;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -40,12 +41,24 @@ public class MainController {
 	 * @param HistoryVO hist
 	 * @return ModelAndView mav
 	 */
-	@RequestMapping(value="/insertHist" ,  produces="text/plain; charset=UTF-8")
-	public ModelAndView insertHist(HistoryVO hist){
+	@RequestMapping(value="/mergeHist" ,  produces="text/plain; charset=UTF-8")
+	public ModelAndView mergeHist(HistoryVO hist){
 		ModelAndView mav	= new ModelAndView();
-		mav.addObject("result"	, expendService.insertHistory(hist) );
-		System.out.println(hist.getSpdDate()+"------------------------" );
-		mav.addObject("total"	, expendService.totalAmount(hist.getSpdDate()  ,"D") );
+		mav.addObject("result"	, expendService.mergeHistory(hist) );
+		mav.addObject("dateTotal"	, expendService.totalAmount(hist.getSpdDate()  ,"D") );
+		mav.addObject("monthTotal"	, expendService.totalAmount(hist.getSpdDate()  ,"M") );
+		mav.setViewName("jsonView");
+		return mav;
+	}
+	
+	
+	@RequestMapping(value="/deleteHist" ,  produces="text/plain; charset=UTF-8")
+	public ModelAndView deleteHist(HistoryVO hist){
+		ModelAndView mav	= new ModelAndView();
+		System.out.println("----------------------------"+hist.getOid());
+		mav.addObject("result"	, expendService.deleteHist(hist.getOid() ));
+		mav.addObject("dateTotal"	, expendService.totalAmount(hist.getSpdDate()  ,"D") );
+		mav.addObject("monthTotal"	, expendService.totalAmount(hist.getSpdDate()  ,"M") );
 		mav.setViewName("jsonView");
 		return mav;
 	}
@@ -57,11 +70,15 @@ public class MainController {
 	 * @param hist
 	 * @return
 	 */
-	@RequestMapping(value="/data/{date}")
-	public ModelAndView histInfoInfo(@PathVariable String date){
-		System.out.println("==================="+date);
+	@RequestMapping(value="/{type}/{value}")
+	public ModelAndView histInfoInfo(	@PathVariable("type") String type,
+												@PathVariable("value") String value){
+		HashMap<String ,String> map	= new HashMap<String ,String>();
+		map.put("type", type);
+		map.put("value", value);
+		
 		ModelAndView mav	= new ModelAndView();
-		mav.addObject("result"  , expendService.histInfo(date) );
+		mav.addObject("result"  , expendService.histInfo( map ));
 		mav.setViewName("jsonView");
 		return mav;
 	}

@@ -48,6 +48,7 @@ html {
 
 body {
   margin: 0;
+  padding-top:140px;
 }
 
 a:focus {
@@ -2051,7 +2052,6 @@ fieldset[disabled] .btn {
   background-color: #ffffff;
   border-color: #cccccc;
 }
-
 .btn-default:hover,
 .btn-default:focus,
 .btn-default:active,
@@ -4499,8 +4499,8 @@ textarea.input-group-sm > .input-group-btn > .btn {
 }
 
 .navbar-inverse {
-  background-color: #222222;
-  border-color: #080808;
+  background-color: #FFFFFF;
+  border-color: #FFFFFF;
 }
 
 .navbar-inverse .navbar-brand {
@@ -6797,6 +6797,12 @@ td.visible-print {
   display: none !important;
 }
 
+.rightTab {
+	margin-right :4px;	
+}
+.buttom-md{
+	margin-bottom:4px;	
+}
 @media print {
   .visible-print {
     display: block !important;

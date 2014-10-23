@@ -15,9 +15,9 @@ public class ExpendDaoImpl implements ExpendDao {
 	private SqlSession sqlSession;
 	
 	@Override
-	public int insertHistory(HistoryVO hist) {
+	public int mergeHistory(HistoryVO hist) {
 		// TODO Auto-generated method stub
-		return sqlSession.insert("history.insertHistory" , hist);
+		return sqlSession.update("history.mergeHistory" , hist);
 	}
 
 	@Override
@@ -36,9 +36,15 @@ public class ExpendDaoImpl implements ExpendDao {
 	}
 
 	@Override
-	public List<HistoryVO> histInfo(String date) {
+	public List<HistoryVO> histInfo(HashMap<String,String> map) {
 		// TODO Auto-generated method stub
-		return  sqlSession.selectList("history.historyInfo",date);
+		return  sqlSession.selectList("history.historyInfo",map);
+	}
+
+	@Override
+	public int deleteHist(String oid) {
+		// TODO Auto-generated method stub
+		return sqlSession.delete("history.historyDelete" , oid);
 	}
 
 }
