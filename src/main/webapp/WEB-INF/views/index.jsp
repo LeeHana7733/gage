@@ -91,6 +91,41 @@
 			}
 		} ,".modal-footer > .btn-primary");
 		
+		
+		$(document).on({
+			click : function(){
+				if ($(this).hasClass("btn-update")) {
+					$.getHistInfo($("#alertModal").attr("data-id") , false , "pop" );
+					$("#alertModal").modal("hide");
+					$("#myModal").modal();
+					$("#myModal > div > div >.modal-footer > .btn-primary").removeClass("btn-menu").removeClass("btn-save").addClass("btn-update").text("수정");
+				} else if ($(this).hasClass("btn-delete")) {
+					$.inputDisable(false);
+					$.post("/deleteHist",
+						$("#modalForm").serialize(),
+						function (data){
+							var oid		= $("input[name=oid]").val();
+							var spdDate	= $("input[name=spdDate]").val();
+							$("button[id='"+oid+"']").remove();
+							$("#alertModal > div > div>.modal-body").text(data.result);
+							$("#alertModal").modal();
+							if ($("#alertModal > div > div >.modal-footer").length == 0 )
+								$("#alertModal > div > div").append("<div class=\"modal-footer center\" >"+alertFooterEl+"</div>");
+							$("button[data-date='"+ spdDate + "']").parent().next().children().children().text($.number(data.dateTotal) + "원");
+							$(".row.all").children().last().text($.number(data.monthTotal) + "원");
+							if ($("button[data-date='"+ spdDate + "']").parent().parent().next().children().children().size() == 0 ){
+								html	="<input type=\"text\"  class=\"form-control\" value=\"작성된 지출내역이 없습니다.\" >";
+								$("button[data-date='"+ spdDate + "']").parent().parent().next().children().html(html);
+							}
+						},
+						'json'
+					);
+				}else{
+					
+				}
+			}
+		} , "#alertModal > div > div> .modal-body> .btn.btn-default");
+		
 		$("#datepicker").datepicker({
 		    dateFormat: 'yy-mm-dd',
 		    prevText: '이전 달',
@@ -103,37 +138,6 @@
 		    showMonthAfterYear: true,
 		    yearSuffix: '년'
 		  });
-		
-		$(document).on({
-			click : function (){
-				if ($(this).hasClass("btn-update")){
-					$.getHistInfo($("#alertModal").attr("data-id") , false , "pop" );
-					$("#alertModal").modal("hide");
-					$("#myModal").modal();
-					$("#myModal > div > div >.modal-footer > .btn-primary").removeClass("btn-menu").removeClass("btn-save").addClass("btn-update").text("수정");
-				}else if ($(this).hasClass("btn-delete")){
-					alert ("Asfadsf");
-					$.post("/deleteHist" ,
-							$("#modalForm").serialize(),
-							function (data){
-								$("#myModal").modal("hide");
-								$('#myModal').on('hidden.bs.modal', function () {
-									$("form")[0].reset();
-								});
-								$("#alertModal > div > div>.modal-body").text(data.result);
-								$("#alertModal").modal();
-								if ($("#alertModal > div > div>.modal-footer").length == 0 )
-									$("#alertModal > div > div").append("<div class=\"modal-footer center\" >"+alertFooterEl+"</div>");
-								$.getHistInfo(dateVal ,$("button[data-date='"+ dateVal + "']").closest(".row").next().children().first() , "date");	
-								$("button[data-date='"+ dateVal + "']").parent().next().children().children().text($.number(data.dateTotal) + "원");
-								$(".row.all").children().last().text($.number(data.monthTotal) + "원");
-							}
-							,'json');
-				}else{
-					
-				}
-			}
-		} , "#alertModal > div > div> .modal-body> .btn.btn-default ");
 		
 		$('body').animate({
 		    scrollTop:$("button[data-date='${date}']").offset().top-124
@@ -199,6 +203,7 @@
 					$("input[name='spdHistory']").val(val.spdHistory);
 					$("input[name='spdMemo']").val(val.spdMemo);
 					$("input[name='spdCategory']").val(val.spdCategory);
+					$("input[name='spdPayment']").val(val.spdPayment);
 				});
 				$.inputDisable(option);
 			}
@@ -238,7 +243,7 @@
 	});
 	</script>
   </head>
-  <body data-twttr-rendered="true">
+  <body>
   	<img alt="loading" id="loading" src="/resources/images/ajax-loader.gif" />
   	<header class="navbar navbar-inverse navbar-fixed-top bs-docs-nav" role="banner">
 		<div class="container">
@@ -294,65 +299,69 @@
 			</div>
 		</div>
 	</div>
-	<div class="modal fade" id="myModal">
-		<div class="modal-dialog sm">
-			<div class="modal-content">
-		    	<div class="modal-header">
-		      		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-		      		<h4 class="modal-title">지출내역</h4>
-		    	</div>
-			    <div class="modal-body">
-			    	<form role="form" id="modalForm">
-				    	<div class="row bottom">
-				    		<div class="col-sm-4">지출일</div>
-				    		<div class="col-sm-8"><input type="text" name="spdDate" class="form-control" id="datepicker" ></div>
-				    	</div>
-				    	<div class="row bottom">
-				    		<div class="col-sm-4">지출금액</div>
-				    		<div class="col-sm-8">
-				    			<div class="input-group">
-				    				<input type="text" name="spdAmount" class="form-control">
-				    				<span class="input-group-addon">원</span>
-				    			</div>
-				    		</div>
-				    	</div>
-				    	<div class="row bottom">
-				    		<input type="hidden" name="oid" class="form-control">
-				    		<div class="col-sm-4">지출내역</div>
-				    		<div class="col-sm-8"><input type="text" name="spdHistory" class="form-control"></div>
-				    	</div>
-				    	<div class="row bottom">
-				    		<div class="col-sm-4">메모</div>
-				    		<div class="col-sm-8"><input type="text" name="spdMemo" class="form-control"></div>
-				    	</div>
-				    	<div class="row bottom">
-				    		<div class="col-sm-4">분류</div>
-				    		<div class="col-sm-8"><input type="text" name="spdCategory"  class="form-control"></div>
-				    	</div>
-			    	</form>
-			    </div>
-			    <div class="modal-footer center">
-			      	<button type="button" class="btn btn-primary btn-save">저장</button>
-			      	<button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
-			    </div>
-		  	</div><!-- /.modal-content -->
-		</div><!-- /.modal-dialog -->
-	</div><!-- /.modal -->
-	<div class="modal fade" id="alertModal">
-		<div class="modal-dialog sm">
-			<div class="modal-content">
-				<div class="modal-header">
-		      		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-		      		<h4 class="modal-title">결과</h4>
-		    	</div>
-			    <div class="modal-body">
-			    </div>
-			    <div class="modal-footer center" >
-			      	<button type="button" class="btn btn-default" data-dismiss="modal">확인</button>
-			    </div>
-		  	</div><!-- /.modal-content -->
-		</div><!-- /.modal-dialog -->
-	</div><!-- /.modal -->
+	<form role="form" id="modalForm">
+		<div class="modal fade" id="myModal">
+			<div class="modal-dialog sm">
+				<div class="modal-content">
+			    	<div class="modal-header">
+			      		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+			      		<h4 class="modal-title">지출내역</h4>
+			    	</div>
+				    <div class="modal-body">
+					    	<div class="row bottom">
+					    		<div class="col-sm-4">지출일</div>
+					    		<div class="col-sm-8"><input type="text" name="spdDate" class="form-control" id="datepicker" ></div>
+					    	</div>
+					    	<div class="row bottom">
+					    		<div class="col-sm-4">지출금액</div>
+					    		<div class="col-sm-8">
+					    			<div class="input-group">
+					    				<input type="text" name="spdAmount" class="form-control">
+					    				<span class="input-group-addon">원</span>
+					    			</div>
+					    		</div>
+					    	</div>
+					    	<div class="row bottom">
+					    		<input type="hidden" name="oid" class="form-control">
+					    		<div class="col-sm-4">지출내역</div>
+					    		<div class="col-sm-8"><input type="text" name="spdHistory" class="form-control"></div>
+					    	</div>
+					    	<div class="row bottom">
+					    		<div class="col-sm-4">메모</div>
+					    		<div class="col-sm-8"><input type="text" name="spdMemo" class="form-control"></div>
+					    	</div>
+					    	<div class="row bottom">
+					    		<div class="col-sm-4">분류</div>
+					    		<div class="col-sm-8"><input type="text" name="spdCategory"  class="form-control"></div>
+					    	</div>
+					    	<div class="row bottom">
+					    		<div class="col-sm-4">결제</div>
+					    		<div class="col-sm-8"><input type="text" name="spdPayment"  class="form-control"></div>
+					    	</div>
+				    </div>
+				    <div class="modal-footer center">
+				      	<button type="button" class="btn btn-primary btn-save">저장</button>
+				      	<button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
+				    </div>
+			  	</div><!-- /.modal-content -->
+			</div><!-- /.modal-dialog -->
+		</div><!-- /.modal -->
+		<div class="modal fade" id="alertModal">
+			<div class="modal-dialog sm">
+				<div class="modal-content">
+					<div class="modal-header">
+			      		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+			      		<h4 class="modal-title">결과</h4>
+			    	</div>
+				    <div class="modal-body">
+				    </div>
+				    <div class="modal-footer center" >
+				      	<button type="button" class="btn btn-default" data-dismiss="modal">확인</button>
+				    </div>
+			  	</div><!-- /.modal-content -->
+			</div><!-- /.modal-dialog -->
+		</div><!-- /.modal -->
+	</form>
     <script src="/resources/js/bootstrap.min.js"></script>
   </body>
 </html>

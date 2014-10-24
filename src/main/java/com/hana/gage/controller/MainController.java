@@ -51,10 +51,10 @@ public class MainController {
 		return mav;
 	}
 	
-	
 	@RequestMapping(value="/deleteHist" ,  produces="text/plain; charset=UTF-8")
 	public ModelAndView deleteHist(HistoryVO hist){
 		ModelAndView mav	= new ModelAndView();
+		System.out.println("hist" + hist.getSpdAmount());
 		System.out.println("----------------------------"+hist.getOid());
 		mav.addObject("result"	, expendService.deleteHist(hist.getOid() ));
 		mav.addObject("dateTotal"	, expendService.totalAmount(hist.getSpdDate()  ,"D") );

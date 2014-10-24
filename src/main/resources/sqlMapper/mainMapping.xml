@@ -90,7 +90,7 @@
 	<select id="historyInfo" parameterType="hashmap" resultType="history">
 		SELECT 	OID, 
 					TO_CHAR(SPD_UPDATE_dATE , 'hh24:mi:ss')	SPD_TIME ,
-					TO_CHAR(SPD_UPDATE_DATE, 'yyyy-mm-dd') 	SPD_DATE ,
+					TO_CHAR(SPD_DATE, 'yyyy-mm-dd') 	SPD_DATE ,
 					SPD_AMOUNT, 
 					SPD_HISTORY, 
 					SPD_MEMO, 
@@ -106,7 +106,7 @@
 				AND	SPD_DATE	 = 	TO_DATE(#{value} , 'YYYY-MM-DD') 
 			</when>
 		</choose>
-		ORDER BY	SPD_DATE		
+		ORDER BY	SPD_TIME		
 	</select>
 	
 	<select id="totalAmount" parameterType="hashmap" resultType="string">
