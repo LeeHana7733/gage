@@ -11,7 +11,7 @@ import com.hana.gage.domain.HistoryVO;
 public interface ExpendService {
 	public String mergeHistory(HistoryVO hist);
 	public String deleteHist(String oid);
-	public List<HashMap<String,String>> histList(String date);
+	public List<HashMap<String,String>> histList(HistoryVO hist);
 	public List<HistoryVO> histInfo(HashMap<String,String> map);
-	public String totalAmount(String date , String type);
+	public String totalAmount(HistoryVO hist , String type);
 }

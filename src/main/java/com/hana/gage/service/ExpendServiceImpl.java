@@ -23,13 +23,9 @@ public class ExpendServiceImpl implements ExpendService{
 		return result;
 	}
 	@Override
-	public List<HashMap<String,String>> histList(String date) {
-		return expendDao.histList(date);
-	}
-	@Override
-	public String totalAmount(String date ,String type) {
+	public String totalAmount(HistoryVO hist,String type) {
 		// TODO Auto-generated method stub
-		return expendDao.totalAmount(date , type);
+		return expendDao.totalAmount(hist , type);
 	}
 	@Override
 	public List<HistoryVO> histInfo(HashMap<String,String> map) {
@@ -43,6 +39,11 @@ public class ExpendServiceImpl implements ExpendService{
 		if (expendDao.deleteHist(oid) ==1 )
 			result	= "결제내역 삭제 되었습니다.";
 		return result;
+	}
+	@Override
+	public List<HashMap<String, String>> histList(HistoryVO hist) {
+		// TODO Auto-generated method stub
+		return expendDao.histList(hist);
 	}
 
 }

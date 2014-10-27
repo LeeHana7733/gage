@@ -21,16 +21,10 @@ public class ExpendDaoImpl implements ExpendDao {
 	}
 
 	@Override
-	public List<HashMap<String,String>> histList(String date) {
+	public String totalAmount(HistoryVO hist ,String type) {
 		// TODO Auto-generated method stub
-		return sqlSession.selectList("history.historyList",date);
-	}
-
-	@Override
-	public String totalAmount(String date ,String type) {
-		// TODO Auto-generated method stub
-		HashMap<String ,String> map = new HashMap<String ,String>();
-		map.put("date" , date);
+		HashMap<String ,Object> map = new HashMap<String ,Object>();
+		map.put("date" , hist);
 		map.put("type" , type);
 		return sqlSession.selectOne("history.totalAmount", map);
 	}
@@ -45,6 +39,12 @@ public class ExpendDaoImpl implements ExpendDao {
 	public int deleteHist(String oid) {
 		// TODO Auto-generated method stub
 		return sqlSession.delete("history.historyDelete" , oid);
+	}
+
+	@Override
+	public List<HashMap<String, String>> histList(HistoryVO hist) {
+		// TODO Auto-generated method stub
+		return sqlSession.selectList("history.historyList",hist);
 	}
 
 }

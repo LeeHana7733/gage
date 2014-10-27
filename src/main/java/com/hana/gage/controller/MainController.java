@@ -25,15 +25,16 @@ public class MainController {
 	 * @return ModelAndView mav
 	 */
 	@RequestMapping (value="/" )
-	public ModelAndView mainView(){
+	public ModelAndView mainView(HistoryVO hist){
 		Calendar now 			= Calendar.getInstance();
 		SimpleDateFormat	sdf	= new SimpleDateFormat("yyyy-MM-dd");
         now.set(now.get(Calendar.YEAR) , now.get(Calendar.MONTH) , now.get(Calendar.DATE) );
 		ModelAndView mav	= new ModelAndView("index");
 		mav.addObject("lastDay" , now.getActualMaximum(Calendar.DATE) );
 		mav.addObject("date" , sdf.format(new Date()));
-		mav.addObject("totalAmount" , expendService.totalAmount(sdf.format(new Date()),"M"));
-		mav.addObject("totalDate" , expendService.histList(sdf.format(new Date())));
+		hist.setSpdDate(sdf.format(new Date()));
+		mav.addObject("totalAmount" , expendService.totalAmount(hist,"M"));
+		mav.addObject("totalDate" , expendService.histList(hist));
 		return mav;
 	}
 	/**
@@ -45,8 +46,8 @@ public class MainController {
 	public ModelAndView mergeHist(HistoryVO hist){
 		ModelAndView mav	= new ModelAndView();
 		mav.addObject("result"	, expendService.mergeHistory(hist) );
-		mav.addObject("dateTotal"	, expendService.totalAmount(hist.getSpdDate()  ,"D") );
-		mav.addObject("monthTotal"	, expendService.totalAmount(hist.getSpdDate()  ,"M") );
+		mav.addObject("dateTotal"	, expendService.totalAmount(hist,"D") );
+		mav.addObject("monthTotal"	, expendService.totalAmount(hist,"M") );
 		mav.setViewName("jsonView");
 		return mav;
 	}
@@ -54,31 +55,36 @@ public class MainController {
 	@RequestMapping(value="/deleteHist" ,  produces="text/plain; charset=UTF-8")
 	public ModelAndView deleteHist(HistoryVO hist){
 		ModelAndView mav	= new ModelAndView();
-		System.out.println("hist" + hist.getSpdAmount());
-		System.out.println("----------------------------"+hist.getOid());
 		mav.addObject("result"	, expendService.deleteHist(hist.getOid() ));
-		mav.addObject("dateTotal"	, expendService.totalAmount(hist.getSpdDate()  ,"D") );
-		mav.addObject("monthTotal"	, expendService.totalAmount(hist.getSpdDate()  ,"M") );
+		mav.addObject("dateTotal"	, expendService.totalAmount(hist ,"D") );
+		mav.addObject("monthTotal"	, expendService.totalAmount(hist  ,"M") );
 		mav.setViewName("jsonView");
 		return mav;
 	}
 	
 	/**
-	 * 
-	 * 
-	 * 
 	 * @param hist
 	 * @return
 	 */
 	@RequestMapping(value="/{type}/{value}")
 	public ModelAndView histInfoInfo(	@PathVariable("type") String type,
-												@PathVariable("value") String value){
+												@PathVariable("value") String value,
+												HistoryVO hist){
 		HashMap<String ,String> map	= new HashMap<String ,String>();
 		map.put("type", type);
 		map.put("value", value);
+		map.put("spdPayment", hist.getSpdPayment());
 		
 		ModelAndView mav	= new ModelAndView();
 		mav.addObject("result"  , expendService.histInfo( map ));
+		mav.setViewName("jsonView");
+		return mav;
+	}
+	@RequestMapping(value="/list"  ,  produces="text/plain; charset=UTF-8")
+	public ModelAndView histList(HistoryVO hist){
+		ModelAndView mav	= new ModelAndView();
+		mav.addObject("totalDate" , expendService.histList(hist));
+		mav.addObject("monthTotal"	, expendService.totalAmount(hist  ,"M") );
 		mav.setViewName("jsonView");
 		return mav;
 	}

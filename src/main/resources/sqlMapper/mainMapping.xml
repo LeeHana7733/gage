@@ -71,20 +71,24 @@
 		DELETE FROM AC_HISTORY
 		WHERE OID = #{oid}
 	</delete>
-	<select id="historyList" parameterType="string" resultType="hashmap">
+	<select id="historyList" parameterType="history" resultType="hashmap">
 		<![CDATA[
 		SELECT	TO_CHAR(A.TOTAL_DT , 'yyyy-mm-dd') AS SPD_DATE,
 					NVL( SUM(B.SPD_AMOUNT) , '0') SPD_AMOUNT
 		FROM     (	SELECT	TRUNC (START_DT + LEVEL, 'DD')-1 TOTAL_DT
-	         			FROM     (	SELECT 	TRUNC( TO_DATE(#{date},'yyyy-mm-dd'), 'MM') START_DT
+	         			FROM     (	SELECT 	TRUNC( TO_DATE(#{spdDate},'yyyy-mm-dd'), 'MM') START_DT
 	              						FROM		DUAL)
 	             		CONNECT BY LEVEL <= TO_CHAR(LAST_DAY(START_DT), 'DD')
 	             	) A ,
 	           		AC_HISTORY  B
 		WHERE	TO_CHAR(A.TOTAL_DT ,'YYYYMMDD') = TO_CHAR(B.SPD_DATE(+) , 'YYYYMMDD')
+		]]>
+		<if test="spdPayment != 0">
+			AND	B.SPD_PAYMENT(+)	= #{spdPayment}
+		</if>
 		GROUP BY TOTAL_DT
 		ORDER BY TOTAL_DT DESC
-		]]>
+	
 	</select>
 	
 	<select id="historyInfo" parameterType="hashmap" resultType="history">
@@ -106,6 +110,9 @@
 				AND	SPD_DATE	 = 	TO_DATE(#{value} , 'YYYY-MM-DD') 
 			</when>
 		</choose>
+		<if test="spdPayment != 0">
+				AND	SPD_PAYMENT	=	#{spdPayment} 
+		</if>
 		ORDER BY	SPD_TIME		
 	</select>
 	
@@ -115,11 +122,14 @@
 		WHERE	1=1
 		<choose>
 			<when test="type eq 'D'.toString()">
-				AND	SPD_DATE	=	TO_DATE(#{date} , 'yyyy-mm-dd')
+				AND	SPD_DATE	=	TO_DATE(#{date.spdDate} , 'yyyy-mm-dd')
 			</when>
 			<when test="type eq 'M'.toString()">
-				AND 	TO_CHAR(SPD_DATE , 'MONTH') 	=	TO_CHAR(TO_DATE(#{date}), 'MONTH')
+				AND 	TO_CHAR(SPD_DATE , 'MONTH') 	=	TO_CHAR(TO_DATE(#{date.spdDate}), 'MONTH')
 			</when>
 		</choose>
+		<if test="date.spdPayment != 0">
+				AND	SPD_PAYMENT	=	#{date.spdPayment} 
+		</if>
 	</select>
 </mapper>

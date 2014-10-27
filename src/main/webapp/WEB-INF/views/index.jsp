@@ -17,234 +17,283 @@
 	<script type="text/javascript">
 	var timer;
 	var subTimer;
-	var alertFooterEl;
-	$(document).ready(function(){
-		$(".col-sm-9 > .input-group > .btn").on({
-			mousedown : function(){
-				var el	=	$(this);
-				timer = setTimeout(function () {
-					$("#myModal").modal();
-					$("form")[0].reset();
-					$("input[name='oid']").val("");
-					$.inputDisable(false);
-					$("#alertModal > div > div>.modal-header h4").text("결과");
-					$("#myModal > div > div >.modal-footer > .btn-primary").removeClass("btn-menu").removeClass("btn-update").addClass("btn-save").text("저장");
-					 $("input[name*='spdDate']").val(el.closest(".row").children().first().text().trim());
-				}, 1000);		
-			},
-			click : function(){
-				var value = $(this).closest(".row").children().first().text();
-				var lastNode= $(this).closest(".row").next().children().first();
-				$.getHistInfo(value , lastNode ,"date");
-				$(this).closest(".row").next().toggleClass("hide");
-				$(this).toggleClass("btn-info");
-			},
-			mouseup :function(){
-				clearTimeout(timer);
-			}
-		});
-		
-		$(document).on({
-			mousedown: function(event){
-				var $this	= $(this);
-				subTimer = setTimeout(function () {
-					$.getHistInfo($this.attr("id"),"menu", "pop");
-				}, 1000);		
+		$(document).ready(function(){
+			var alertFooterEl	= $("#alertModal > div > div>.modal-footer").html();
+			/********************************************************************************************************************
+			** @	Click 날짜
+			** @	마우스를 길게 누르면 결제입력창 보여줌
+					마우스 한번 짧게 누르면 결제 상세정보 보여줌	
+			********************************************************************************************************************/
+			$(document).on({
+				mousedown : function(){
+					var el	=	$(this);
+					timer = setTimeout(function () {
+						$("#myModal").modal();
+						$("form")[0].reset();
+						$("input[name='oid']").val("");
+						$.inputDisable(false);
+						$("#alertModal > div > div>.modal-header h4").text("결과");
+						$("#myModal > div > div >.modal-footer > .btn-primary").removeClass("btn-menu").removeClass("btn-update").addClass("btn-save").text("저장");
+						 $("input[name*='spdDate']").val(el.closest(".row").children().first().text().trim());
+					}, 1000);		
+				},
+				click : function(){
+					var value = $(this).closest(".row").children().first().text();
+					var lastNode= $(this).closest(".row").next().children().first();
+					$.getHistInfo(value , lastNode ,"date");
+					$(this).closest(".row").next().toggleClass("hide");
+					$(this).toggleClass("btn-info");
+				},
+				mouseup :function(){
+					clearTimeout(timer);
+				}
+			}, ".col-sm-9 > .input-group > .btn");
+			
+			/********************************************************************************************************************
+			** @	상세정보 Click 날짜
+			** @	마우스를 길게 누르면 메뉴 보여줌
+					마우스 한번 짧게 누르면 결제 상세정보 보여줌	
+			********************************************************************************************************************/
+			$(document).on({
+				mousedown: function(event){
+					var $this	= $(this);
+					subTimer = setTimeout(function () {
+						$.getHistInfo($this.attr("id"),"menu", "pop");
+					}, 1000);		
 
-			},
-			mouseup:function(){
-				clearTimeout(subTimer);
-			},
-			click:function(){
-				$("#myModal").modal();
-				$.getHistInfo($(this).attr("id"),true, "pop");	
-				$("#myModal >div> div>.modal-footer > .btn-primary").removeClass("btn-save").removeClass("btn-update").addClass("btn-menu").text("메뉴열기");
-				$("input[name*='spdDate']").val($(this).closest(".row").children().first().text().trim());
-			}
-		} , ".col-sm-12>.btn");
-		
-		$(document).on({
-			click : function(){
-				if ($(this).hasClass("btn-save")||$(this).hasClass("btn-update")){
-					var dateVal	= $("input[name*='spdDate']").val();
-					$.post("/mergeHist" , 
+				},
+				mouseup:function(){
+					clearTimeout(subTimer);
+				},
+				click:function(){
+					$("#myModal").modal();
+					$.getHistInfo($(this).attr("id"),true, "pop");	
+					$("#myModal >div> div>.modal-footer > .btn-primary").removeClass("btn-save").removeClass("btn-update").addClass("btn-menu").text("메뉴열기");
+				}
+			} , ".col-sm-12>.btn");
+			
+			/********************************************************************************************************************
+			** @	수정 & 저장
+			********************************************************************************************************************/
+			$(document).on({
+				click : function(){
+					if ($(this).hasClass("btn-save")||$(this).hasClass("btn-update")){
+						var dateVal	= $("input[name*='spdDate']").val();
+						$.post("/mergeHist" , 
+								$("#modalForm").serialize(),
+								function (data){
+									$("#myModal").modal("hide");
+									$('#myModal').on('hidden.bs.modal', function () {
+										$("form")[0].reset();
+									});
+									$("#alertModal > div > div>.modal-body").text(data.result);
+									$("#alertModal").modal();
+									if ($("#alertModal > div > div>.modal-footer").length == 0 )
+										$("#alertModal > div > div").append("<div class=\"modal-footer center\" >"+alertFooterEl+"</div>");
+									$.getHistInfo(dateVal ,$("button[data-date='"+ dateVal + "']").closest(".row").next().children().first() , "date");	
+									$("button[data-date='"+ dateVal + "']").parent().next().children().children().text($.number(data.dateTotal) + "원");
+									$(".row.all").children().last().text($.number(data.monthTotal) + "원");
+								},
+								'json'
+						);
+					}else{
+						$("#myModal").modal("hide");
+						$.showPaymentPop();
+					}
+				}
+			} ,".modal-footer > .btn-primary");
+			
+			/********************************************************************************************************************
+			** @	메뉴에서 수정하기 클릭시 수정창 보여줌
+					메뉴에서 삭제하기 클릭시 삭제
+			********************************************************************************************************************/		
+			$(document).on({
+				click : function(){
+					if ($(this).hasClass("btn-update")) {
+						$.getHistInfo($("#alertModal").attr("data-id") , false , "pop" );
+						$("#alertModal").modal("hide");
+						$("#myModal").modal();
+						$("#myModal > div > div >.modal-footer > .btn-primary").removeClass("btn-menu").removeClass("btn-save").addClass("btn-update").text("수정");
+					} else if ($(this).hasClass("btn-delete")) {
+						$.getHistInfo($("#alertModal").attr("data-id") , false , "pop" );
+						var oid		= $("input[name=oid]").val();
+						var spdDate	= $("input[name=spdDate]").val();
+						$.post("/deleteHist",
 							$("#modalForm").serialize(),
 							function (data){
-								$("#myModal").modal("hide");
-								$('#myModal').on('hidden.bs.modal', function () {
-									$("form")[0].reset();
-								});
+								$("button[id='"+oid+"']").remove();
 								$("#alertModal > div > div>.modal-body").text(data.result);
 								$("#alertModal").modal();
-								if ($("#alertModal > div > div>.modal-footer").length == 0 )
+								if ($("#alertModal > div > div >.modal-footer").length == 0 )
 									$("#alertModal > div > div").append("<div class=\"modal-footer center\" >"+alertFooterEl+"</div>");
-								$.getHistInfo(dateVal ,$("button[data-date='"+ dateVal + "']").closest(".row").next().children().first() , "date");	
-								$("button[data-date='"+ dateVal + "']").parent().next().children().children().text($.number(data.dateTotal) + "원");
+								$("button[data-date='"+ spdDate + "']").parent().next().children().children().text($.number(data.dateTotal) + "원");
+								$(".row.all").children().last().text($.number(data.monthTotal) + "원");
+								if ($("button[data-date='"+ spdDate + "']").parent().parent().next().children().children().size() == 0 ){
+									html	="<input type=\"text\"  class=\"form-control\" value=\"작성된 지출내역이 없습니다.\" >";
+									$("button[data-date='"+ spdDate + "']").parent().parent().next().children().html(html);
+								}
+							},
+							'json'
+						);
+					}else{
+						
+					}
+				}
+			} , "#alertModal > div > div> .modal-body> .btn.btn-default");
+			
+			
+			$(document).on({
+				click : function(){
+					payment	 = 1 ;
+					$.post("/list",
+							{'spdPayment':1 , 'spdDate': '${date}'},
+							function(data){
+								var html	= "";
+								$.each(data.totalDate , function (i, val){
+									html	+= "<div class=\"row\" ><div class=\"row buttom-md\" >";
+									html	+=	 "<div class=\"col-sm-2\"><button type=\"button\" class=\"btn btn-primary\" disabled=\"disabled\" data-date =\""+val.SPD_DATE+"\">"+val.SPD_DATE;
+									html	+= "</button></div><div class=\"col-sm-9\"><div class=\"input-group\">";
+									html	+= "<button type=\"button\" class=\"btn fix btn-default\">"+$.number(val.SPD_AMOUNT) + "원</button>"; 
+									html	+= "</div></div></div><div class=\"row bottom hide\"><div class=\"col-sm-12\"></div></div></div>";
+								});
+								$(".bs-docs-section").html(html);
 								$(".row.all").children().last().text($.number(data.monthTotal) + "원");
 							},
 							'json'
 					);
-				}else{
-					$("#myModal").modal("hide");
-					$.showPaymentPop();
 				}
-			}
-		} ,".modal-footer > .btn-primary");
-		
-		
-		$(document).on({
-			click : function(){
-				if ($(this).hasClass("btn-update")) {
-					$.getHistInfo($("#alertModal").attr("data-id") , false , "pop" );
-					$("#alertModal").modal("hide");
-					$("#myModal").modal();
-					$("#myModal > div > div >.modal-footer > .btn-primary").removeClass("btn-menu").removeClass("btn-save").addClass("btn-update").text("수정");
-				} else if ($(this).hasClass("btn-delete")) {
-					$.inputDisable(false);
-					$.post("/deleteHist",
-						$("#modalForm").serialize(),
-						function (data){
-							var oid		= $("input[name=oid]").val();
-							var spdDate	= $("input[name=spdDate]").val();
-							$("button[id='"+oid+"']").remove();
-							$("#alertModal > div > div>.modal-body").text(data.result);
-							$("#alertModal").modal();
-							if ($("#alertModal > div > div >.modal-footer").length == 0 )
-								$("#alertModal > div > div").append("<div class=\"modal-footer center\" >"+alertFooterEl+"</div>");
-							$("button[data-date='"+ spdDate + "']").parent().next().children().children().text($.number(data.dateTotal) + "원");
-							$(".row.all").children().last().text($.number(data.monthTotal) + "원");
-							if ($("button[data-date='"+ spdDate + "']").parent().parent().next().children().children().size() == 0 ){
-								html	="<input type=\"text\"  class=\"form-control\" value=\"작성된 지출내역이 없습니다.\" >";
-								$("button[data-date='"+ spdDate + "']").parent().parent().next().children().html(html);
+			}, ".col-sm-4>.btn");
+			/********************************************************************************************************************
+			** @	데이터픽커 한글화 셋팅
+			********************************************************************************************************************/	
+			$("#datepicker").datepicker({
+			    dateFormat: 'yy-mm-dd',
+			    prevText: '이전 달',
+			    nextText: '다음 달',
+			    monthNames: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'],
+			    monthNamesShort: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'],
+			    dayNames: ['일','월','화','수','목','금','토'],
+			    dayNamesShort: ['일','월','화','수','목','금','토'],
+			    dayNamesMin: ['일','월','화','수','목','금','토'],
+			    showMonthAfterYear: true,
+			    yearSuffix: '년'
+			  });
+			
+			$('body').animate({
+			    scrollTop:$("button[data-date='${date}']").offset().top-124
+			}, 500);
+			
+			/********************************************************************************************************************
+			** @function getHistInfo
+			** @history를 조회한다
+			** @params value  		date or oid
+							option			lastNode or menu or boolean
+							type			date	날짜를 클릭했을 경우 
+											pop	상세정보를 클릭했을 경우
+			********************************************************************************************************************/
+			$.getHistInfo = function (value ,option,type) {
+				$.post("/"+type+"/"+value, 
+						{'spdPayment' : payment},
+						function(data){
+							if (type=="date")
+								$.getHistInfoBasic(data , option);
+							else{
+								$.getHistInfoPop(data , option);
+								if (option=="menu")
+									$.showPaymentPop();
 							}
 						},
-						'json'
-					);
-				}else{
+						"json"
+				);
+			};
 					
+			/********************************************************************************************************************
+			**  @function getHistInfoBasic
+			**	@조회한 날짜의 상세 정보를 보여준다.
+			**	@params	data		: 날짜
+			**				lastNode : 조회한날짜의 마지막 노드
+			********************************************************************************************************************/
+			$.getHistInfoBasic = function (data , lastNode){
+				var html	= "";
+				if (data.result != ""){
+					$.each(data.result , function (i, val){
+						var dataVal	= "";
+						dataVal	+= val.spdTime +"<pre>"
+									+ $.number(val.spdAmount) + "원</pre> <pre>" + val.spdMemo+ "</pre>";
+						html += "<button type=\"button\" class=\"btn btn-default rightTab fix\" id=\""+val.oid+"\">"+dataVal+"</button>";
+					});
+				}else{
+					html	="<input type=\"text\"  class=\"form-control\" value=\"작성된 지출내역이 없습니다.\" >";
 				}
-			}
-		} , "#alertModal > div > div> .modal-body> .btn.btn-default");
-		
-		$("#datepicker").datepicker({
-		    dateFormat: 'yy-mm-dd',
-		    prevText: '이전 달',
-		    nextText: '다음 달',
-		    monthNames: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'],
-		    monthNamesShort: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'],
-		    dayNames: ['일','월','화','수','목','금','토'],
-		    dayNamesShort: ['일','월','화','수','목','금','토'],
-		    dayNamesMin: ['일','월','화','수','목','금','토'],
-		    showMonthAfterYear: true,
-		    yearSuffix: '년'
-		  });
-		
-		$('body').animate({
-		    scrollTop:$("button[data-date='${date}']").offset().top-124
-		}, 500);
-		
-		/********************************************************************************************************************
-		** @function getHistInfo
-		** @history를 조회한다
-		** @params value  		date or oid
-						option			lastNode or menu or boolean
-						type			date	날짜를 클릭했을 경우 
-										pop	상세정보를 클릭했을 경우
-		********************************************************************************************************************/
-		$.getHistInfo = function (value ,option,type) {
-			$.post("/"+type+"/"+value, 
-					"",
-					function(data){
-						if (type=="date")
-							$.getHistInfoBasic(data , option);
-						else{
-							$.getHistInfoPop(data , option);
-							if (option=="menu")
-								$.showPaymentPop();
-						}
-					},
-					"json"
-			);
-		};
-				
-		/********************************************************************************************************************
-		**  @function getHistInfoBasic
-		**	@조회한 날짜의 상세 정보를 보여준다.
-		**	@params	data		: 날짜
-		**				lastNode : 조회한날짜의 마지막 노드
-		********************************************************************************************************************/
-		$.getHistInfoBasic = function (data , lastNode){
-			var html	= "";
-			if (data.result != ""){
-				$.each(data.result , function (i, val){
-					var dataVal	= "";
-					dataVal	+= val.spdTime +"<pre>"
-								+ $.number(val.spdAmount) + "원</pre> <pre>" + val.spdMemo+ "</pre>";
-					html += "<button type=\"button\" class=\"btn btn-default rightTab fix\" id=\""+val.oid+"\">"+dataVal+"</button>";
-				});
-			}else{
-				html	="<input type=\"text\"  class=\"form-control\" value=\"작성된 지출내역이 없습니다.\" >";
-			}
-			lastNode.html(html);
-		};
-		
-		/********************************************************************************************************************
-		** @function getHistInfoPop
-		**	@ModalPop Setting
-		**	@params 	data : 조회정보 
-		**					type : input disable 여부
-		********************************************************************************************************************/
-		$.getHistInfoPop = function (data , option){
-			if (data.result != ""){
-				$.each(data.result , function (i, val){
-					$("input[name='oid']").val(val.oid);
-					$("input[name='spdDate']").val(val.spdDate);
-					$("input[name='spdAmount']").val(val.spdAmount);
-					$("input[name='spdHistory']").val(val.spdHistory);
-					$("input[name='spdMemo']").val(val.spdMemo);
-					$("input[name='spdCategory']").val(val.spdCategory);
-					$("input[name='spdPayment']").val(val.spdPayment);
-				});
-				$.inputDisable(option);
-			}
-		};
-		
-		/********************************************************************************************************************
-		** @function inputDisable
-		**	@form 전체 input disabled 셋팅
-		**	@params 	option : input disable 여부 (menu일 경우 무조건 disabled)
-		********************************************************************************************************************/
-		$.inputDisable	= function(option){
-			var type	= option =="menu" || option ? true : false;
-			$("form  input").each(function(index) {
-				if (type)
-					$(this).attr("disabled","disabled");
-				else
-					$(this).removeAttr("disabled");				
-             });  
-		};
-		
-		/********************************************************************************************************************
-		** @function  showPaymentPop
-		**	@메뉴를 셋팅한다.
-		**	@params 	option : input disable 여부 (menu일 경우 무조건 disabled)
-		********************************************************************************************************************/
-		$.showPaymentPop = function(){
-			$("#alertModal").attr("data-id" , $("input[name='oid']").val());
-			$("#alertModal > div > div>.modal-header h4").text($("input[name='spdHistory']").val());
-			var html	= "<button type=\"button\" class=\"btn btn-default  btn-block btn-update\">수정하기</button>";
-				html += "<button type=\"button\" class=\"btn btn-default  btn-block btn-delete\">삭제하기</button>";
-				html += "<button type=\"button\" class=\"btn btn-default  btn-block btn-smart\">스마트정산</button>";
-			$("#alertModal > div > div>.modal-body").html(html);
-			alertFooterEl	= $("#alertModal > div > div>.modal-footer").html();
-			$("#alertModal > div > div>.modal-footer").remove();
-			$("#alertModal").modal();
-		}
-	});
+				lastNode.html(html);
+			};
+			
+			/********************************************************************************************************************
+			** @function getHistInfoPop
+			**	@ModalPop Setting
+			**	@params 	data : 조회정보 
+			**					type : input disable 여부
+			********************************************************************************************************************/
+			$.getHistInfoPop = function (data , option){
+				if (data.result != ""){
+					$.each(data.result , function (i, val){
+						$("input[name='oid']").val(val.oid);
+						$("input[name='spdDate']").val(val.spdDate);
+						$("input[name='spdAmount']").val(val.spdAmount);
+						$("input[name='spdHistory']").val(val.spdHistory);
+						$("input[name='spdMemo']").val(val.spdMemo);
+						$("input[name='spdCategory']").val(val.spdCategory);
+						$("input[name='spdPayment']").val(val.spdPayment);
+					});
+					$.inputDisable(option);
+				}
+			};
+			
+			/********************************************************************************************************************
+			** @function inputDisable
+			**	@form 전체 input disabled 셋팅
+			**	@params 	option : input disable 여부 (menu일 경우 무조건 disabled)
+			********************************************************************************************************************/
+			$.inputDisable	= function(option){
+				var type	= option =="menu" || option ? true : false;
+				$("form  input").each(function(index) {
+					if (type)
+						$(this).attr("disabled","disabled");
+					else
+						$(this).removeAttr("disabled");				
+	             });  
+			};
+			
+			/********************************************************************************************************************
+			** @function  showPaymentPop
+			**	@메뉴를 셋팅한다.
+			**	@params 	option : input disable 여부 (menu일 경우 무조건 disabled)
+			********************************************************************************************************************/
+			$.showPaymentPop = function(){
+				$("#alertModal").attr("data-id" , $("input[name='oid']").val());
+				$("#alertModal > div > div>.modal-header h4").text($("input[name='spdHistory']").val());
+				var html	= "<button type=\"button\" class=\"btn btn-default  btn-block btn-update\">수정하기</button>";
+					html += "<button type=\"button\" class=\"btn btn-default  btn-block btn-delete\">삭제하기</button>";
+					html += "<button type=\"button\" class=\"btn btn-default  btn-block btn-smart\">스마트정산</button>";
+				$("#alertModal > div > div>.modal-body").html(html);
+				$("#alertModal > div > div>.modal-footer").remove();
+				$("#alertModal").modal();
+			};
+			
+			$.showClassPop = function(){
+				$("#alertModal").attr("data-id" , $("input[name='oid']").val());
+				$("#alertModal > div > div>.modal-header h4").text($("input[name='spdHistory']").val());
+				var html	= "<button type=\"button\" class=\"btn btn-default  btn-block btn-update\">수정하기</button>";
+					html += "<button type=\"button\" class=\"btn btn-default  btn-block btn-delete\">삭제하기</button>";
+					html += "<button type=\"button\" class=\"btn btn-default  btn-block btn-smart\">스마트정산</button>";
+				$("#alertModal > div > div>.modal-body").html(html);
+				$("#alertModal > div > div>.modal-footer").remove();
+				$("#alertModal").modal();
+			};
+		});
 	</script>
   </head>
   <body>
-  	<img alt="loading" id="loading" src="/resources/images/ajax-loader.gif" />
   	<header class="navbar navbar-inverse navbar-fixed-top bs-docs-nav" role="banner">
 		<div class="container">
 			<ul class="nav nav-tabs">
@@ -265,9 +314,9 @@
 		</div>
 		<div class="container">
 			<div class="row bottom">
-				<div class="col-sm-4"><button type="button" class="btn btn-default">카드별</button></div>
-				<div class="col-sm-4"><button type="button" class="btn btn-default">분류별</button></div>
-				<div class="col-sm-4"><button type="button" class="btn btn-default">세부분류별</button></div>
+				<div class="col-sm-4"><button type="button" class="btn btn-default card">카드별</button></div>
+				<div class="col-sm-4"><button type="button" class="btn btn-default  class">분류별</button></div>
+				<div class="col-sm-4"><button type="button" class="btn btn-default detail">세부분류별</button></div>
 			</div>
 		</div>
 	</header>
@@ -322,6 +371,7 @@
 					    		</div>
 					    	</div>
 					    	<div class="row bottom">
+					    		<input type="hidden" name="spdPaymentType" class="form-control">
 					    		<input type="hidden" name="oid" class="form-control">
 					    		<div class="col-sm-4">지출내역</div>
 					    		<div class="col-sm-8"><input type="text" name="spdHistory" class="form-control"></div>
