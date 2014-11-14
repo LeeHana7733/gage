@@ -2,6 +2,7 @@ package com.hana.gage.dao;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,12 +22,9 @@ public class ExpendDaoImpl implements ExpendDao {
 	}
 
 	@Override
-	public String totalAmount(HistoryVO hist ,String type) {
+	public Map<String , String> totalAmount(HistoryVO hist) {
 		// TODO Auto-generated method stub
-		HashMap<String ,Object> map = new HashMap<String ,Object>();
-		map.put("date" , hist);
-		map.put("type" , type);
-		return sqlSession.selectOne("history.totalAmount", map);
+		return sqlSession.selectOne("history.dateInfoAmount", hist);
 	}
 
 	@Override
@@ -44,7 +42,10 @@ public class ExpendDaoImpl implements ExpendDao {
 	@Override
 	public List<HashMap<String, String>> histList(HistoryVO hist) {
 		// TODO Auto-generated method stub
-		return sqlSession.selectList("history.historyList",hist);
+		if ("IN".equals(hist.getSpdType()))
+			return sqlSession.selectList("history.historyInList",hist);
+		else
+			return sqlSession.selectList("history.historyList",hist);
 	}
 
 }

@@ -1,0 +1,50 @@
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="category">
+
+	<select id="cateList" parameterType="cate" resultType="cate">
+		SELECT 	CATE_OID,
+					CATE_NAME
+		FROM		AC_CATEGORY
+		WHERE 	CATE_TYPE 	= #{cateType}
+		<if test="cateOid !=  ''.toString() and cateOid != null ">
+				AND	PARENT_CATE_ID = #{cateOid}
+		</if>
+	</select>
+	
+	<update id="cateMerge" parameterType="cate" >
+		MERGE	INTO AC_CATEGORY
+		USING 	DUAL
+		ON	 	(CATE_OID=#{cateOid})
+		WHEN MATCHED THEN
+			UPDATE SET
+			CATE_NAME				= #{cateName}
+			CATE_UPDATE_DATE	= SYSDATE
+		WHEN NOT MATCHED THEN
+			INSERT
+			(
+				CATE_OID 	, 
+				CATE_NAME	,
+				CATE_TYPE	,
+				CATE_UPDATE_DATE,
+				CATE_CREATE_DATE			
+			)
+			VALUES
+			(
+				AC_CATEGORY_SEQ	.NEXTVAL,
+				#{cateOid},
+				#{cateName},
+				'Y',
+				SYSDATE,
+				SYSDATE
+			)
+	</update>
+	
+	<delete id="cateDelete" parameterType="cate">
+		DELETE 
+		FROM 	AC_CATEGORY
+		WHERE 	CATE_OID =#{cateOid}
+	</delete>
+
+</mapper>

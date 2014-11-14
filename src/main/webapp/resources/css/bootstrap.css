@@ -784,6 +784,9 @@ pre code {
   margin-top: 10px;
   margin-bottom: 10px;
 }
+.pointer{
+	cursor: pointer;
+}
 
 .row:before,
 .row:after {
@@ -1425,6 +1428,11 @@ th {
   line-height: 1.428571429;
   vertical-align: top;
   border-top: 1px solid #dddddd;
+}
+
+.table.bottomLine tbody >tr> td{
+	border-bottom: 1px solid #dddddd;
+	border-top	: 0px;
 }
 
 .table thead > tr > th {

@@ -1,7 +1,10 @@
 package com.hana.gage.service;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,9 +26,13 @@ public class ExpendServiceImpl implements ExpendService{
 		return result;
 	}
 	@Override
-	public String totalAmount(HistoryVO hist,String type) {
+	public Map<String ,String> totalAmount(HistoryVO hist) {
 		// TODO Auto-generated method stub
-		return expendDao.totalAmount(hist , type);
+		if (hist.getSpdDate() == null || "".equals(hist.getSpdDate())){
+			SimpleDateFormat	sdf	= new SimpleDateFormat("yyyy-MM-dd");
+			hist.setSpdDate(sdf.format(new Date()));
+		}
+		return expendDao.totalAmount(hist);
 	}
 	@Override
 	public List<HistoryVO> histInfo(HashMap<String,String> map) {

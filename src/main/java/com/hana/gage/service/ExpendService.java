@@ -2,6 +2,7 @@ package com.hana.gage.service;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,5 +14,5 @@ public interface ExpendService {
 	public String deleteHist(String oid);
 	public List<HashMap<String,String>> histList(HistoryVO hist);
 	public List<HistoryVO> histInfo(HashMap<String,String> map);
-	public String totalAmount(HistoryVO hist , String type);
+	public Map<String ,String> totalAmount(HistoryVO hist);
 }

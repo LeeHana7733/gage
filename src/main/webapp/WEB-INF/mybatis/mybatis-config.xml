@@ -12,13 +12,9 @@
     <!-- 별명 -->
     <typeAliases>
          <typeAlias alias="hashMap" type="java.util.HashMap" />
-         <typeAlias alias="map" type="java.util.Map" />
-         <typeAlias alias="history" type="com.hana.gage.domain.HistoryVO" />
+         <typeAlias alias="map" 	type="java.util.Map" />
+         <typeAlias alias="hist" 	type="com.hana.gage.domain.HistoryVO" />
+         <typeAlias alias="cate" 	type="com.hana.gage.domain.CategoryVO" />
     </typeAliases>    
   
-<!--
-    <mappers>
-        <mapper resource="mybatis/mapper/tempMapper.xml" />
-    </mappers>
--->
 </configuration>

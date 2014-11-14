@@ -6,12 +6,34 @@ public class HistoryVO {
 	private int 		spdAmount 	= 0 ;
 	private String 	spdHistory	= ""; 
 	private String 	spdMemo	= ""; 
-	private String 	spdCategory	= ""; 
+	private String 	spdCategory	= "0"; 
 	private String	spdPayment	= "0"; 
 	private String 	spdUpdate_date	= ""; 
 	private String 	spdCreate_date	= "";
 	private String	spdTime		= "";
+	private String	paymentType	= "0";
+	private String	cateType	= "0";
+	private String 	spdType		= "";
 	
+	
+	public String getSpdType() {
+		return spdType;
+	}
+	public void setSpdType(String spdType) {
+		this.spdType = spdType;
+	}
+	public String getCateType() {
+		return cateType;
+	}
+	public void setCateType(String cateType) {
+		this.cateType = cateType;
+	}
+	public String getPaymentType() {
+		return paymentType;
+	}
+	public void setPaymentType(String paymentType) {
+		this.paymentType = paymentType;
+	}
 	public String getSpdTime() {
 		return spdTime;
 	}
