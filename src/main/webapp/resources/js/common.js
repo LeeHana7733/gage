@@ -22,7 +22,12 @@ $(document).ready(function(){
 				"json"
 		);
 	};
-			
+	
+	/********************************************************************************************************************
+	** @	데이터픽커 한글화 셋팅
+	********************************************************************************************************************/	
+	$.datepicker.setDefaults(datePickerDefaults); 
+	
 	/********************************************************************************************************************
 	**  @function getHistInfoBasic
 	**	@조회한 날짜의 상세 정보를 보여준다.
@@ -58,7 +63,7 @@ $(document).ready(function(){
 				$("input[name='spdAmount']").val(val.spdAmount);
 				$("input[name='spdHistory']").val(val.spdHistory);
 				$("input[name='spdMemo']").val(val.spdMemo);
-				if ($("#alertModal").data("spdtype") == "IN") {
+				if ($("#myModal").data("spdtype") == "IN") {
 					$("select[name='spdCategory']").html($.getCateList('select' , 'IN' , ''));
 					$("select[name='spdCategory'] > option[value='"+val.spdCategory+"']").attr("selected", "ture");
 				}else{
@@ -102,12 +107,12 @@ $(document).ready(function(){
 	};
 
 	/********************************************************************************************************************
-	** @function getOutHistList
+	** @function getInInstList
 	**	@리스트를 json으로 받아옴
 	**	@params 	payment : 조회정보 
 	********************************************************************************************************************/
-	$.getOutHistList	=	function () {
-			$.post("/outList",
+	$.getInHistList	=	function () {
+			$.post("/inList",
 					{
 						'spdDate': $("#full_date").text(),
 						'spdType': 'IN'
@@ -126,8 +131,9 @@ $(document).ready(function(){
 						}else{
 							html	+= "<tr rowspan='4' class='text-center'><td>수입 내역이 없습니다.</td></tr>";
 						}
-							
 						$(".bottomLine").find('tbody').html(html);
+						$(".row.all").children().last().text($.number(data.totalInfo.MONTHTOTAL) + "원");
+						$(".bottom").find("tr").children().last().text($.number(data.restAmount) + "원");
 					},
 					'json'
 			);
@@ -201,8 +207,8 @@ $(document).ready(function(){
 		$("#alertModal > div > div>.modal-header h4").text(title);
 		var html	= "<button type=\"button\" class=\"btn btn-default  btn-block\" data-payment=\"0\">전체</button>";
 		html		+= $.getCateList('pop' , cateType , cateOid );
-		$("#alertModal > div > div>.modal-body").html(html);
-		$("#alertModal > div > div>.modal-footer").remove();
+		$("#alertModal").find(".modal-body").html(html);
+		$("#alertModal").find(".modal-footer").remove();
 		$("#alertModal").modal();
 	};
 	/********************************************************************************************************************
@@ -218,26 +224,27 @@ $(document).ready(function(){
 				dt.setMonth(dt.getMonth()-1);
 			}
 			$('#full_date').text($.datepicker.formatDate('yy-mm-dd' , dt));
-			tab  == "/" ? $.getHistList() : $.getOutHistList();
+			tab  == "/" ? $.getHistList() : $.getInHistList();
 		}
-	} , ".glyphicon");
-
+	} , ".row div > .glyphicon");
+	
 	var OptionData	= function(option){
 		this.type		= option.type  	|| "text";
 		this.name		= option.name 	|| "";
 		this.id			= option.id		|| "";
 		this.val		= option.val		|| "";
 		this.group	= option.group	|| "";
+		this.className	= option.className	|| "";
 	};
-	
-	$.fn.myModal	= function(option ,spdtype){
+	$.fn.myModal	= function(option ,spdtype , cateType){
 		$(this).data('spdtype' , spdtype||'OUT');
-		var modal	=	new MyModal(option);
+		$(this).data('cateType' , cateType||'CA');
+		var modal	=	new MyModal(option,spdtype , cateType);
 		modal.set();
 	};
 	
-	var MyModal	= function(option){
-		this.option	=	this.getOptions(option) ;
+	var MyModal	= function(option,spdtype){
+		this.option	=	 $.extend(false , this.getDefaults(),option);
 	};
 	
 	MyModal.DEFAULTS = 
@@ -245,46 +252,55 @@ $(document).ready(function(){
 		title : '지출내역',
 		footer : ""
 	};
-	MyModal.prototype.getDefaults = function () {
+
+	MyModal.prototype.getDefaults 	= function () {
 	    return MyModal.DEFAULTS;
 	 };
-	 MyModal.prototype.getOptions	= function(option){
-		 var options	= $.extend(false , this.getDefaults(),option);
-		 return options;
-	 };
-	
 	MyModal.prototype.set	=	 function(){
 		$.each(this.option , function( key, val){
+			var $elBody	=	 $("#myModal").find(".modal-body");
 			var html	=	"";
 			if (key == 'title'){
 				$("#myModal").find(".modal-title").text(val);
 			}else if (key == 'body'){
-				$elBody	=	 $("#myModal").find(".modal-body");
-				$.each(val, function (name, option ){
-					var optionData	=	 new OptionData(option);
-					html	+=	"<div class=\"row bottom\"><div class=\"col-sm-4\">"+name+"</div>";
-					html	+= "<div class=\"col-sm-8\">" ;
-					if (optionData.group	!= ""  )
-						html	+= "<div class=\"input-group\">";
-					if (optionData.type	== 'select'){
-						html	+= "<select name=\""+optionData.name+"\" class=\"form-control\"></select>";
-					}else{
-						html	+= "<input type=\""+ optionData.type+"\" name=\""+optionData.name+"\" class=\"form-control\" value=\""+optionData.val+"\" id=\""+optionData.id+"\">";
-					}
-					if (optionData.group	!= "")
-	    				html	+= "<span class=\"input-group-addon\">"+optionData.group+"</span></div>";
-					html	+= "</div></div>";
+				$.each(val, function (tagType, arrVal){
+					$.each(arrVal , function (name , option ){
+						var optionData	=	 new OptionData(option);
+						if (tagType == 'input'){
+							html	+=	"<div class=\"row bottom\"><div class=\"col-sm-4\">"+name+"</div>";
+							html	+= "<div class=\"col-sm-8\">" ;
+							if (optionData.group	!= ""  )
+								html	+= "<div class=\"input-group\">";
+							if (optionData.type	== 'select'){
+								html	+= "<select name=\""+optionData.name+"\" class=\"form-control\"></select>";
+							}else{
+								html	+= "<input type=\""+ optionData.type+"\" name=\""+optionData.name+"\" class=\"form-control "+optionData.className+"\" id=\""+optionData.id+"\" value=\""+optionData.val+"\">";
+							}
+							if (optionData.group	!= "")
+			    				html	+= "<span class=\"input-group-addon\">"+optionData.group+"</span></div>";
+							html	+= "</div></div>";
+						}else if (tagType == 'btn'){
+							html	+=	"<button type=\"button\" class=\"btn btn-default btn-block btn-"+optionData.className+"\">"+name+"</button>";
+						}
+					});
+					console.log("id======" + $("#myModal").data("id"));
+					console.log("spdtype======" +$("#myModal").data("spdtype") );
+					html	+= "<input type=\"hidden\" name=\"oid\" value=\""+$("#myModal").data("id")+"\" >"; 
+					html	+= "<input type=\"hidden\" name=\"spdType\" value=\""+$("#myModal").data("spdtype")+"\" >"; 
 				});
 				$elBody.html(html);
+			}else if (key == 'alertBody'){
+				$elBody.html(val);
 			}else{
-				console.log(val);
 				if (val != ""){
-					var arr	= val.toString().split(",");
 					$elFooter	= $("#myModal").find(".modal-footer").show();
-					$.each( arr , function (i,text){
+					$.each( val , function (i,text){
 						text	=	text.toString().split(":");
 						var btnClass	= text[1] || "btn-default";
-						html	+= "<button type=\"button\" class=\"btn "+btnClass+" btn-save\">"+text[0]+"</button>";
+							html	+= "<button type=\"button\" class=\"btn "+btnClass+"\"";
+						if (btnClass.indexOf("close") > -1)
+							html	+= "data-dismiss=\"modal\"";
+						html+=">"+text[0]+"</button>";
 					});
 					$elFooter.html(html);
 				}else{

@@ -49,6 +49,7 @@ html {
 body {
   margin: 0;
   padding-top:140px;
+  position: relative;
 }
 
 a:focus {
@@ -3821,6 +3822,14 @@ textarea.input-group-sm > .input-group-btn > .btn {
   display: block;
 }
 
+.nav > li.navbar-right.a {
+  position: relative;
+  display: block;
+  padding: 10px 15px;
+  color: #428bca;
+  cursor: pointer;
+}
+
 .nav > li > a {
   position: relative;
   display: block;
@@ -3828,7 +3837,8 @@ textarea.input-group-sm > .input-group-btn > .btn {
 }
 
 .nav > li > a:hover,
-.nav > li > a:focus {
+.nav > li > a:focus,
+.nav > li.navbar-right.a:hover {
   text-decoration: none;
   background-color: #eeeeee;
 }

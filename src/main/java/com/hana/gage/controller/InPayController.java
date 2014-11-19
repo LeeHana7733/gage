@@ -14,13 +14,13 @@ import com.hana.gage.domain.HistoryVO;
 import com.hana.gage.service.ExpendService;
 
 @Controller
-public class OutPayController {
+public class InPayController {
 	@Autowired
 	private ExpendService expendService;
 	
-	@RequestMapping(value="/outPay")
+	@RequestMapping(value="/inPay")
 	public ModelAndView outPayView(){
-		ModelAndView mav	= new ModelAndView("outPay");
+		ModelAndView mav	= new ModelAndView("inPay");
 		HistoryVO hist			= new HistoryVO();
 		hist.setSpdType("IN");
 		Map<String , String > result	= expendService.totalAmount(hist);
@@ -38,10 +38,18 @@ public class OutPayController {
 		return mav;
 	}
 	
-	@RequestMapping(value="/outList")
+	@RequestMapping(value="/inList")
 	public ModelAndView outList(HistoryVO hist){
 		ModelAndView mav	= new ModelAndView();
 		mav.addObject("result"  , expendService.histList(hist));
+		Map<String ,String > result		=	expendService.totalAmount(hist) ;
+		mav.addObject("totalInfo"	, result);
+		if ("IN".equals(hist.getSpdType())){
+			hist.setSpdType("OUT");
+			int	outAmount	= Integer.parseInt(String.valueOf(result.get("MONTHTOTAL")));
+			result	=	 expendService.totalAmount(hist);
+			mav.addObject("restAmount" ,	outAmount  -Integer.parseInt( String.valueOf(result.get("MONTHTOTAL"))) );
+		}
 		mav.setViewName("jsonView");
 		return mav;
 	}

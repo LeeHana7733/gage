@@ -50,7 +50,8 @@
 				SPD_CATEGORY, 
 				SPD_PAYMENT, 
 				SPD_UPDATE_DATE, 
-				SPD_CREATE_DATE
+				SPD_CREATE_DATE,
+				SPD_TYPE
 			)
 			VALUES
 			(
@@ -62,7 +63,8 @@
 				#{spdCategory}, 
 				#{spdPayment}, 
 				SYSDATE, 
-				SYSDATE
+				SYSDATE,
+				nvl(#{spdType},'OUT')
 			)
 	</update>
 	
@@ -143,16 +145,19 @@
 		]]>	
 		AND	TRUNC(SPD_DATE,'MM')	=	TRUNC(TO_DATE(#{spdDate} , 'yyyy-mm-dd'),'MM')
 		AND	SPD_TYPE = 'IN'
+		ORDER BY SPD_DATE	DESC
 	</select>
 	
 	<select id="dateInfoAmount" parameterType="hist" resultType="hashMap">
 		SELECT	* 
-		FROM		(	SELECT 	SUM	(	CASE 	WHEN TO_CHAR(SPD_DATE , 'MONTH')	=	TO_CHAR(TO_DATE(#{spdDate})	,	'MONTH')
+		FROM		(	SELECT 	NVL	(SUM	(	CASE 	WHEN TO_CHAR(SPD_DATE , 'MONTH')	=	TO_CHAR(TO_DATE(#{spdDate})	,	'MONTH')
 		                								THEN  SPD_AMOUNT 
-		                						END	)	AS  monthTotal,
-	        						SUM	(	CASE	WHEN SPD_DATE 	=	TO_DATE(#{spdDate} , 'yy-mm-dd')
-	                									THEN  SPD_AMOUNT 
-	                							END	)	AS dateTotal,
+		                								ELSE 	0
+		                						END	) , 0 )	AS  monthTotal,
+	        						NVL	(SUM	(	CASE	WHEN SPD_DATE 	=	TO_DATE(#{spdDate} , 'yy-mm-dd')
+	                									THEN  SPD_AMOUNT
+	                									ELSE	0 
+	                							END	), 0 )	AS dateTotal,
 	                				TO_char (fullDate , 'yyyy-mm-dd') as fullDate,
 	                				lastDate,
 	                				to_char ( todate , 'yyyy-mm-dd') as toDate

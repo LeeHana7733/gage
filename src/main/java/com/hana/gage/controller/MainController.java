@@ -1,6 +1,7 @@
 package com.hana.gage.controller;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -38,7 +39,6 @@ public class MainController {
 	public ModelAndView mergeHist(HistoryVO hist){
 		ModelAndView mav	= new ModelAndView();
 		mav.addObject("result"	, expendService.mergeHistory(hist) );
-		mav.addObject("totalInfo"	, expendService.totalAmount(hist) );
 		mav.setViewName("jsonView");
 		return mav;
 	}
@@ -52,7 +52,6 @@ public class MainController {
 	public ModelAndView deleteHist(HistoryVO hist){
 		ModelAndView mav	= new ModelAndView();
 		mav.addObject("result"	, expendService.deleteHist(hist.getOid() ));
-		mav.addObject("totalInfo"	, expendService.totalAmount(hist));
 		mav.setViewName("jsonView");
 		return mav;
 	}
