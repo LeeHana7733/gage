@@ -12,19 +12,8 @@
 					var hasClass	= $(this).children('span').attr('class');
 					if (hasClass.indexOf("search") > -1 ) {
 						$("#myModal").modal().myModal(InPay.serachModal() , 'IN');
-							var edate	= $(document).find("input[name=searchEndDate]").removeClass('hasDatepicker');
-							var sdate	= $(document).find("input[name=searchStrDate]").removeClass('hasDatepicker');
-							sdate.datepicker();
-							sdate.datepicker("option", "maxDate", $("#edate").val());
-							sdate.datepicker("option", "onClose", function ( selectedDate ) {
-								edate.datepicker( "option", "minDate", selectedDate );
-							});
-							
-							edate.datepicker();
-							edate.datepicker("option", "minDate", sdate.val());
-							edate.datepicker("option", "onClose", function ( selectedDate ) {
-						    sdate.datepicker( "option", "maxDate", selectedDate );
-						});
+					  	$("select[name='searchSpdCategory']").html($.getCateList('select' , 'IN' ,''));
+					    $.dateMulti("input[name=searchStrDate]","input[name=searchEndDate]");
 					}else if (hasClass.indexOf("pencil") > -1) {
 						var	 footer	= ['취소:btn-default btn-close','즐겨찾기','입력:btn-primary btn-save'];
 						$("#myModal").data("id" , "").modal().myModal(InPay.myModal(footer) , 'IN');
@@ -109,19 +98,23 @@
 		<div class="row">
 			<table class="table table-hover bottomLine">
 				<tbody>
-					<c:forEach var="data" items="${totalDate}">
-						<tr class="pointer" data-id= "${data.OID}">
-							<td>${data.SPD_DATE}</td>
-							<td>${data.SPD_HISTORY}</td>
-							<td>${data.SPD_MEMO}</td>
-							<td><fmt:formatNumber type="number" pattern="###,###" value="${data.SPD_AMOUNT}" /></td>
-						</tr>
-					</c:forEach>
-					<c:if test="${fn:length(totalDate) == 0 }">
-						<tr rowspan='4' class='text-center'>
-							<td>수입 내역이 없습니다.</td>
-						</tr>
-					</c:if>
+					<c:choose>
+						<c:when test="${fn:length(totalDate) >0 }">
+							<c:forEach var="data" items="${totalDate}">
+								<tr class="pointer" data-id= "${data.OID}">
+									<td>${data.SPD_DATE}</td>
+									<td>${data.SPD_HISTORY}</td>
+									<td>${data.SPD_MEMO}</td>
+									<td><fmt:formatNumber type="number" pattern="###,###" value="${data.SPD_AMOUNT}" /></td>
+								</tr>
+							</c:forEach>						
+						</c:when>
+						<c:otherwise>
+							<tr rowspan='4' class='text-center'>
+								<td>수입 내역이 없습니다.</td>
+							</tr>
+						</c:otherwise>
+					</c:choose>
 				</tbody>
 			</table>
 		</div>

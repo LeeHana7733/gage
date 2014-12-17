@@ -28,16 +28,26 @@
 	<div class="container">
 		<div class="row all">
 		 	<div class="col-sm-1 col-sm-offset-3 pointer" ><span class="glyphicon glyphicon-chevron-left"></span></div>
-		 	<div class="col-sm-2" id="full_date">${totalInfo.TODATE}</div>
+		 	<div class="col-sm-2" id="full_date" data-today="${totalInfo.TO_DAY}">${totalInfo.TODATE}</div>
 		 	<div class="col-sm-1 pointer"><span class="glyphicon glyphicon-chevron-right"></span></div>
 			<div class="col-sm-2 col-sm-offset-2"><fmt:formatNumber type="number" pattern="###,###" value="${totalInfo.MONTHTOTAL}" />원</div>		
 		</div>
 	</div>
 	<div class="container">
 		<div class="row bottom">
-			<div class="col-sm-4"><button type="button" class="btn btn-default card">카드별</button></div>
-			<div class="col-sm-4"><button type="button" class="btn btn-default  class">분류별</button></div>
-			<div class="col-sm-4"><button type="button" class="btn btn-default detail">세부분류별</button></div>
+			<c:choose>
+				<c:when test="${totalInfo.START_DATE eq null}">
+					<div class="col-sm-4"><button type="button" class="btn btn-default card">카드별</button></div>
+					<div class="col-sm-4"><button type="button" class="btn btn-default  class">분류별</button></div>
+					<div class="col-sm-4"><button type="button" class="btn btn-default detail">세부분류별</button></div>
+				</c:when>
+				<c:otherwise>
+					<div class="col-sm-4"><button type="button" class="btn btn-default budgetType" >주별 예산</button></div>
+					<div class="col-sm-4"><button type="button" class="btn btn-default  amountMoney">금액 표시</button></div>
+					<div class="col-sm-4"><button type="button" class="btn btn-default amount">가능액 표시</button></div>
+				</c:otherwise>
+			
+			</c:choose>
 		</div>
 	</div>
 </header>

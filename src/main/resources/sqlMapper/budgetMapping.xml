@@ -1,0 +1,37 @@
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="budget">
+	<select id="budTotalInfo" parameterType="budget" resultType="hashmap">
+		SELECT	
+				<choose>
+					<when test="budType	eq 'Y'.toString()">
+						TO_CHAR(TRUNC(TO_DATE(#{budDate}) , 'Y')	 ,  'yyyy-mm-dd' ) AS START_DATE,
+        				TO_CHAR(LAST_DAY(ADD_MONTHS(TRUNC(TO_DATE(#{budDate}) , 'Y') ,'11')) ,  'yyyy-mm-dd') AS END_DATE,
+					</when>
+					<when test="budType	eq 'M'.toString()">
+						TO_CHAR( TRUNC(TO_DATE ( #{budDate} ) , 'MONTH')  ,  'yyyy-mm-dd' )  AS START_DATE,
+        				TO_CHAR(LAST_DAY(TRUNC(TO_DATE (#{budDate}) , 'MONTH'))  ,  'yyyy-mm-dd') AS END_DATE,
+					</when>
+					<otherwise>
+						TO_CHAR(NEXT_DAY(TO_DATE(#{budDate} )-7, '일') ,  'yyyy-mm-dd')	AS START_DATE,
+         				TO_CHAR(NEXT_DAY(TO_DATE(#{budDate} ),'토') ,  'yyyy-mm-dd')	AS END_DATE,
+					</otherwise>
+				</choose>
+					TO_CHAR(TRUNC (TO_DATE(#{budDate} ) ,'D'),  'yyyy-mm-dd' ) TO_DAY
+         FROM 	DUAL
+	</select>
+	<select id="budgetList" parameterType="hashMap" resultType="budget">
+		SELECT	A.OID,
+					A.BUD_DATE,
+					A.BUD_AMOUNT,
+					B.CATE_OID,
+		       		B.CATE_NAME,
+					A.BUD_TYPE
+		FROM 	AC_BUDGET	A,
+					AC_CATEGORY B
+		WHERE	A.BUD_DATE	BETWEEN		#{START_DATE} AND #{END_DATE}
+		AND		A.BUD_TYPE	= #{BUD_TYPE} 	
+		AND 		A.BUD_CATEGORY   = B.CATE_OID
+	</select>
+</mapper>

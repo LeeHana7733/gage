@@ -15,6 +15,7 @@
          <typeAlias alias="map" 	type="java.util.Map" />
          <typeAlias alias="hist" 	type="com.hana.gage.domain.HistoryVO" />
          <typeAlias alias="cate" 	type="com.hana.gage.domain.CategoryVO" />
+         <typeAlias alias="budget" 	type="com.hana.gage.domain.BudgetVO" />
     </typeAliases>    
   
 </configuration>

@@ -216,17 +216,69 @@ $(document).ready(function(){
 	********************************************************************************************************************/
 	$(document).on({
 		click : function(){
-			var dt 	= new Date($('#full_date').text());
-			dt.setDate(1);
-			if ($(this).hasClass("glyphicon-chevron-right")){
-				dt.setMonth(dt.getMonth()+1);
+			var url	= document.location.href;
+			if (url.indexOf("budget") > -1){
+				var dt 	= new Date($("#full_date").data("today"));
+				if ($.trim($(".budgetType").data("type")) == "")
+					$(".budgetType").data('type' , 'W');
+				if ($(this).hasClass("glyphicon-chevron-right")){
+					if ($(".budgetType").data("type") == 'W'){
+						dt.setDate(dt.getDate() + 7);
+					}else if ($(".budgetType").data("type") == 'M'){
+						dt.setMonth(dt.getMonth() + 1);
+					}else{
+						dt.setYear(dt.getFullYear() + 1);
+					}
+				}else{
+					if ($(".budgetType").data("type") == 'W'){
+						dt.setDate(dt.getDate() - 7);
+					}else if ($(".budgetType").data("type") == 'M'){
+						dt.setMonth(dt.getMonth() - 1);
+					}else{
+						dt.setYear(dt.getFullYear() - 1);
+					}
+				}
+				$.post("/budgetList", 
+						{
+							'budDate' : $.datepicker.formatDate('yy-mm-dd' , dt) , 
+							'budType' : $(".budgetType").data('type')
+						},
+						function (data){
+							$('#full_date').text(data.totalInfo.START_DATE+" ~ " +data.totalInfo.END_DATE).data("today" , data.totalInfo.TO_DAY);
+						},
+						'json'
+				);
 			}else{
-				dt.setMonth(dt.getMonth()-1);
+				var dt 	= new Date($('#full_date').text());
+				dt.setDate(1);
+				if ($(this).hasClass("glyphicon-chevron-right")){
+					dt.setMonth(dt.getMonth()+1);
+				}else{
+					dt.setMonth(dt.getMonth()-1);
+				}
+				$('#full_date').text($.datepicker.formatDate('yy-mm-dd' , dt));
+				tab  == "/" ? $.getHistList() : $.getInHistList();
 			}
-			$('#full_date').text($.datepicker.formatDate('yy-mm-dd' , dt));
-			tab  == "/" ? $.getHistList() : $.getInHistList();
 		}
 	} , ".row div > .glyphicon");
+	
+	
+	$.dateMulti	= function ($sdate , $edate) {
+		var edate	= $(document).find($edate).removeClass('hasDatepicker');
+		var sdate	= $(document).find($sdate).removeClass('hasDatepicker');
+		sdate.datepicker();
+		sdate.datepicker("option", "maxDate", $($edate).val());
+		sdate.datepicker("option", "onClose", function ( selectedDate ) {
+			edate.datepicker( "option", "minDate", selectedDate );
+		});
+	
+		edate.datepicker();
+		edate.datepicker("option", "minDate", sdate.val());
+		edate.datepicker("option", "onClose", function ( selectedDate ) {
+			sdate.datepicker( "option", "maxDate", selectedDate );
+		});
+	}
+	
 	
 	var OptionData	= function(option){
 		this.type		= option.type  	|| "text";

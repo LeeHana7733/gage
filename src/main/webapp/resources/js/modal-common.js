@@ -40,7 +40,7 @@ var Modal	=	{
 																													'검색어' : {'name' : 'searchKey'},
 																													'검색 시작일' : {'name' : 'searchStrDate'},
 																													'검색 종료일' : {'name' : 'searchEndDate'},
-																													'검색 분류'	: {'name':'searchSpdType'}
+																													'검색 분류'	: {'type':'select','name':'searchSpdCategory'}
 																												}
 																							},
 																				footer	:	[ '검색:btn-primary btn-search' , '취소:btn-default btn-close']
