@@ -5,7 +5,7 @@ public class BudgetVO extends CategoryVO {
 	private String budAmount		= "0";
 	private String budCategory	= "";
 	private String budType		= "";
-
+	
 	public String getBudDate() {
 		return budDate;
 	}

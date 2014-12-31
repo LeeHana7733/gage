@@ -1,6 +1,7 @@
 package com.hana.gage.service;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -29,7 +30,7 @@ public class BudgetServiceImpl implements BudgetService{
 		return budgetDao.budTotalInfo(bud);
 	}
 	@Override
-	public List<BudgetVO> budgetList(HashMap<String, String> map) {
+	public List<HashMap<String ,String>> budgetList(HashMap<String, String> map) {
 		// TODO Auto-generated method stub
 		return budgetDao.budgetList(map);
 	}

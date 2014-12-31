@@ -14,24 +14,62 @@
         				TO_CHAR(LAST_DAY(TRUNC(TO_DATE (#{budDate}) , 'MONTH'))  ,  'yyyy-mm-dd') AS END_DATE,
 					</when>
 					<otherwise>
-						TO_CHAR(NEXT_DAY(TO_DATE(#{budDate} )-7, '일') ,  'yyyy-mm-dd')	AS START_DATE,
+						TO_CHAR(TRUNC (TO_DATE(#{budDate} ) ,'D'),  'yyyy-mm-dd' )	AS START_DATE,
          				TO_CHAR(NEXT_DAY(TO_DATE(#{budDate} ),'토') ,  'yyyy-mm-dd')	AS END_DATE,
 					</otherwise>
 				</choose>
-					TO_CHAR(TRUNC (TO_DATE(#{budDate} ) ,'D'),  'yyyy-mm-dd' ) TO_DAY
+					TO_CHAR(TO_DATE(#{budDate}) ,'yyyy-mm-dd' ) TO_DAY
          FROM 	DUAL
 	</select>
-	<select id="budgetList" parameterType="hashMap" resultType="budget">
-		SELECT	A.OID,
-					A.BUD_DATE,
-					A.BUD_AMOUNT,
-					B.CATE_OID,
-		       		B.CATE_NAME,
-					A.BUD_TYPE
-		FROM 	AC_BUDGET	A,
-					AC_CATEGORY B
-		WHERE	A.BUD_DATE	BETWEEN		#{START_DATE} AND #{END_DATE}
-		AND		A.BUD_TYPE	= #{BUD_TYPE} 	
-		AND 		A.BUD_CATEGORY   = B.CATE_OID
+	<select id="budgetList" parameterType="hashMap" resultType="hashMap">
+		SELECT	OID,
+			       	BUD_AMOUNT,
+			       	BUD_DATE,
+			       	CATE_OID,
+			       	CATE_NAME,
+			       	BUD_TYPE,
+			       	FAIR_VALUE,
+			       	SUM_AMOUNT,
+			       	D_DAY,
+			       	NVL(BUD_AMOUNT - SUM_AMOUNT , 0 )  AS REM_AMOUNT,
+			       	NVL(TRUNC((BUD_AMOUNT - SUM_AMOUNT)/D_DAY),0) AS AVG_VALUE,
+			       	CEIL(SUM_AMOUNT/BUD_AMOUNT*100) AS AVG_PROCESS
+		FROM 	(			       	
+						SELECT	A.OID,
+									A.BUD_DATE,
+									A.BUD_AMOUNT,
+									B.CATE_OID,
+						       		NVL(B.CATE_NAME , '전체 예산') AS CATE_NAME,
+									A.BUD_TYPE,
+									NVL(CASE 		A.BUD_TYPE
+								 	WHEN 	'W' 
+								 		THEN	TRUNC(A.BUD_AMOUNT / 7) *
+												(7-TO_NUMBER(NEXT_DAY(TO_DATE(#{TO_DAY}), '토') - to_date(#{TO_DAY}, 'YYYY-MM-DD')))
+									WHEN 	'Y' 
+									 	THEN	TRUNC(A.BUD_AMOUNT / 365) *
+												TO_NUMBER(LAST_DAY(ADD_MONTHS(TRUNC(TO_DATE(#{TO_DAY}), 'Y'),'11')) - to_date(#{TO_DAY}, 'YYYY-MM-DD'))
+									ELSE
+										TRUNC(A.BUD_AMOUNT / TO_NUMBER(TO_CHAR(LAST_DAY(TRUNC(TO_DATE(#{TO_DAY}),'MONTH')),'DD'))) *
+										TO_NUMBER(LAST_DAY(TRUNC(TO_DATE(#{TO_DAY}), 'MONTH')) -to_date(#{TO_DAY}, 'YYYY-MM-DD'))
+								 	END , 0 )	AS FAIR_VALUE,
+									NVL(CASE 
+										WHEN		B.CATE_OID IS NULL 
+								        	THEN	(SELECT	SUM(SPD_AMOUNT) 
+								        			FROM 	AC_HISTORY 
+								        			WHERE 	SPD_DATE BETWEEN #{START_DATE} AND #{END_DATE})
+								        ELSE 		
+								        	(SELECT	SUM(SPD_AMOUNT) 
+								        	FROM 	AC_HISTORY
+								        	WHERE 	SPD_CATEGORY = B.CATE_OID 
+								        	AND 		SPD_DATE BETWEEN #{START_DATE} AND #{END_DATE}) 
+							        END , 0)	AS SUM_AMOUNT,
+							        TO_DATE(#{END_DATE}) - TO_DATE(#{TO_DAY})+1 AS D_DAY
+						FROM		AC_BUDGET	A,
+									AC_CATEGORY B
+						WHERE	A.BUD_DATE	BETWEEN	 #{START_DATE} AND #{END_DATE}
+						AND		A.BUD_TYPE	= #{BUD_TYPE} 	
+						AND		A.BUD_CATEGORY   = B.CATE_OID(+)
+						ORDER BY CATE_OID NULLS FIRST
+				)
 	</select>
 </mapper>

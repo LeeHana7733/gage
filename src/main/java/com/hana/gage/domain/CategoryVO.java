@@ -30,6 +30,4 @@ public class CategoryVO {
 	public void setCateUpdateDate(String cateUpdateDate) {
 		this.cateUpdateDate = cateUpdateDate;
 	}
-	
-	
 }

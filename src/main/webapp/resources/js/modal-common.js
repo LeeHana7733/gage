@@ -1,54 +1,82 @@
-var Modal	=	{
-						 InPay		:	{
-										 	myModal	:	function (footerTag){
-																 return 	{	
-																		title : '수입 내역',
-																		body : {	
-																					'input'	:	{
-																									'수입일'	:	{'name' :'spdDate' , 'id':'datepicker' } ,
-																									'수입금액'	:	{'name' :'spdAmount' , 'group' : '원'}	,
-																									'수입내역'	:	{'name' :'spdHistory'},
-																									'메모'		:	{'name' :'spdMemo'},
-																									'분류'		:	{'type' : 'select' ,'name' :'spdCategory'}
-																								}
-																				},
-																		footer : footerTag};
+var Modal	=	
+{
+	 InPay		:	{
+					 	myModal	:	function (footerTag){
+											 return 	{	
+													title : '수입 내역',
+													body : {	
+																'input'	:	{
+																				'수입일'	:	{'name' :'spdDate' , 'id':'datepicker' } ,
+																				'수입금액'	:	{'name' :'spdAmount' , 'group' : '원'}	,
+																				'수입내역'	:	{'name' :'spdHistory'},
+																				'메모'		:	{'name' :'spdMemo'},
+																				'분류'		:	{'type' : 'select' ,'name' :'spdCategory'}
+																			}
 															},
-											menuModal	:	function (titleName) {
-																	return		{	
-																					title	:  	titleName,
-																					body 	:	{	'btn'	:	{
-																													'수정하기'  : {'className':'update'},
-																													'삭제하기'  : {'className':'delete'}
-																												}
-																								}
-																				};
-																},
-					
-											alertModal	:	function(bodyText){
-																	return {
-																					title	:  	'결과',
-																					alertBody	: 	bodyText,
-																					footer	:	[ '확인:btn-primary btn-close']
-																			};		
-																},
-											serachModal	:	function(){
-																	return	{
-																				title	: 	"수입내역검색",
-																				body	: 	{
-																								"input"	: {
-																													'검색어' : {'name' : 'searchKey'},
-																													'검색 시작일' : {'name' : 'searchStrDate'},
-																													'검색 종료일' : {'name' : 'searchEndDate'},
-																													'검색 분류'	: {'type':'select','name':'searchSpdCategory'}
-																												}
-																							},
-																				footer	:	[ '검색:btn-primary btn-search' , '취소:btn-default btn-close']
-																			};
-												
-																}
-																
-					 					}
+													footer : footerTag};
+										},
+						menuModal	:	function (titleName) {
+												return		{	
+																title	:  	titleName,
+																body 	:	{	'btn'	:	{
+																								'수정하기'  : {'className':'update'},
+																								'삭제하기'  : {'className':'delete'}
+																							}
+																			}
+															};
+											},
+	
+						alertModal	:	function(bodyText){
+												return {
+																title	:  	'결과',
+																alertBody	: 	bodyText,
+																footer	:	[ '확인:btn-primary btn-close']
+														};		
+											},
+						serachModal	:	function(){
+												return	{
+															title	: 	"수입내역검색",
+															body	: 	{
+																			"input"	: {
+																								'검색어' : {'name' : 'searchKey'},
+																								'검색 시작일' : {'name' : 'searchStrDate'},
+																								'검색 종료일' : {'name' : 'searchEndDate'},
+																								'검색 분류'	: {'type':'select','name':'searchSpdCategory'}
+																							}
+																		},
+															footer	:	[ '검색:btn-primary btn-search' , '취소:btn-default btn-close']
+														};
+							
+											}
+											
+					},
+	Budget	:	{
+						menuModal	: function (){
+								return	{
+											title	: "예산 카테고리 추가",
+											body	: {
+														'btn'	: {
+																		'전체예산' : {'className':'allBud'},
+																		'카테고리 기준' : {'className':'cateBud'},
+																		'세부 카테고리 기준' : {'className':'dtlCateBud'}
+																	}
+														
+														}
+								}
+						},
+						budgetType	: function () {
+							return	{
+									title	: "예산 기간 선택",
+									body	: {
+												'btn' : {
+															'주별 예산' : {'className' : 'totalCount week'},
+															'월별 예산' : {'className' : 'totalCount month'},
+															'연별 예산' : {'className' : 'totalCount year'}
+														}
+											}
+									}
+						}
+					}
 };
 var datePickerDefaults	= {
 		   	dateFormat: 'yy-mm-dd',

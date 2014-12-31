@@ -23,7 +23,7 @@ public class BudgetController {
 		HashMap<String ,String> map	= new HashMap<String ,String>();
 		map	=	budgetService.budTotalInfo(bud);
 		mav.addObject("totalInfo" , map);
-		map.put("BUD_TYPE" , "M");
+		map.put("BUD_TYPE" , "W");
 		mav.addObject("budgetList" , budgetService.budgetList(map));
 		return mav;
 	}
@@ -33,7 +33,7 @@ public class BudgetController {
 		HashMap<String ,String> map	= new HashMap<String ,String>();
 		map	=	budgetService.budTotalInfo(bud);
 		mav.addObject("totalInfo" , map);
-		map.put("BUD_TYPE" , "M");
+		map.put("BUD_TYPE" , bud.getBudType());
 		mav.addObject("budgetList" , budgetService.budgetList(map));
 		mav.setViewName("jsonView");
 		return mav;

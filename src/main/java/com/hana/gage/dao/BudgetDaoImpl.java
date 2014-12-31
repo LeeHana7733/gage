@@ -21,7 +21,7 @@ public class BudgetDaoImpl implements BudgetDao {
 	}
 
 	@Override
-	public List<BudgetVO> budgetList(HashMap<String, String> map) {
+	public List<HashMap<String ,String>> budgetList(HashMap<String, String> map) {
 		// TODO Auto-generated method stub
 		return sqlSession.selectList("budget.budgetList" , map) ;
 	}
