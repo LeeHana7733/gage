@@ -34,6 +34,11 @@ public class BudgetServiceImpl implements BudgetService{
 		// TODO Auto-generated method stub
 		return budgetDao.budgetList(map);
 	}
+	@Override
+	public String budgetMerge(BudgetVO bud) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 
 }

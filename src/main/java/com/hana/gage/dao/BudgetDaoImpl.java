@@ -25,4 +25,10 @@ public class BudgetDaoImpl implements BudgetDao {
 		// TODO Auto-generated method stub
 		return sqlSession.selectList("budget.budgetList" , map) ;
 	}
+
+	@Override
+	public String budgetMerge(BudgetVO bud) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

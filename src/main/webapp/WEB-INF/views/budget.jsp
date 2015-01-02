@@ -59,9 +59,23 @@ $(document).ready(function(){
 					dataP,
 					function(data){
 						$('#full_date').text(data.totalInfo.START_DATE+" ~ " +data.totalInfo.END_DATE).data("today" , data.totalInfo.TO_DAY);
+						$(".main").children().remove();
+						if (data.budgetList.length > 0){
+							$.each(data.budgetList, function ( i ,val){
+								$(".main").htmlAppend(val);
+							});
+						}else{
+							$(".main").append('	<div class="jumbotron">'+
+									  					'<div class="container">'+
+									  						'<p class="text-center">메뉴를 눌러 예산을 추가해 주세요</p>'+
+									  					'</div>'+
+									  				'</div>'
+									);
+						}
 					},
 					'json');
 			$("#myModal").modal("hide");
+			$(".budgetType").text($(this).text());
 		}
 	} , ".btn-totalCount");
 });
@@ -70,7 +84,7 @@ $(document).ready(function(){
 <body>
   	<%@include file="/WEB-INF/views/includes/gnb.jsp" %>
   	<div class="container">
-  		<div class="row">
+  		<div class="row  main">
   			<c:forEach var="result" items="${budgetList}" >
 		  		<table class="table table-hover bottomLine">
 					<tbody>
@@ -81,7 +95,7 @@ $(document).ready(function(){
 						<tr>
 							<td colspan="2">
 								<div class="progress bottom10">
-								  <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="${result.AVG_PR vOCESS}" aria-valuemin="0" aria-valuemax="100" style="width: ${result.AVG_PROCESS}%">
+								  <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="${result.AVG_PROCESS}" aria-valuemin="0" aria-valuemax="100" style="width: ${result.AVG_PROCESS}%">
 								    <span class="sr-only"></span>
 								  </div>
 								</div>
@@ -90,7 +104,7 @@ $(document).ready(function(){
 						<tr  class="warning money">
 							<td>금일 기준 적정 사용금액</td>
 							<td><fmt:formatNumber type="number" pattern="###,###" value="${result.FAIR_VALUE}" />원</td>
-						</tr>
+						</tr>	
 						<tr  class="warning money">
 							<td>현재 사용금액 (예정금액 포함)</td>
 							<td><fmt:formatNumber type="number" pattern="###,###" value="${result.SUM_AMOUNT}" />원</td>

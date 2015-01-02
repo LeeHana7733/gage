@@ -245,6 +245,19 @@ $(document).ready(function(){
 						},
 						function (data){
 							$('#full_date').text(data.totalInfo.START_DATE+" ~ " +data.totalInfo.END_DATE).data("today" , data.totalInfo.TO_DAY);
+							$(".main").children().remove();
+							if (data.budgetList.length > 0){
+								$.each(data.budgetList, function ( i ,val){
+									$(".main").htmlAppend(val);
+								});
+							}else{
+								$(".main").append('	<div class="jumbotron">'+
+										  					'<div class="container">'+
+										  						'<p class="text-center">메뉴를 눌러 예산을 추가해 주세요</p>'+
+										  					'</div>'+
+										  				'</div>'
+										);
+							}
 						},
 						'json'
 				);
@@ -373,4 +386,39 @@ $(document).ready(function(){
 	            $this.text(text.replace(value2, value1));
 	    });
 	};
+	
+	jQuery.fn.htmlAppend	= function(val){
+		$(this).append('<table class="table table-hover bottomLine">'+
+				'<tbody>'+
+					'<tr>'+
+						'<td><strong>' + val.CATE_NAME +'</strong></td>'+
+						'<td>' + $.number(val.BUD_AMOUNT) +' 원</td>'+
+					'</tr>'+
+					'<tr>'+
+						'<td colspan="2">'+
+							'<div class="progress bottom10">'+
+								'<div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="' + val.AVG_PROCESS +'" aria-valuemin="0" aria-valuemax="100" style="width: ' + val.AVG_PROCESS + '%">'+
+									'<span class="sr-only"></span>'+
+								'</div>'+
+							'</div>'+
+						'</td>'+
+						'<tr  class="warning money">'+
+							'<td>금일 기준 적정 사용금액</td>'+
+							'<td>' + $.number(val.FAIR_VALUE) +' 원</td>'+
+						'</tr>'+
+						'<tr  class="warning money">'+
+							'<td>현재 사용금액 (예정금액 포함)</td>'+
+							'<td>' + $.number(val.SUM_AMOUNT) +' 원</td>'+
+						'</tr>'+
+						'<tr  class="warning amountT">'+
+							'<td>이번 주 남은 예산(D-' + val.D_DAY+')</td>'+
+							'<td>' + $.number(val.REM_AMOUNT) +' 원</td>'+
+						'</tr>'+
+						'<tr  class="warning amountT">'+
+							'<td>평균 하루 사용 가능 금액</td>'+
+							'<td>' + $.number(val.AVG_VALUE) +'원</td>'+
+						'</tr>'+
+					'</tbody>'+
+				'</table>');
+	}
 });

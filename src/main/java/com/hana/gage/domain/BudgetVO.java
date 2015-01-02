@@ -2,7 +2,7 @@ package com.hana.gage.domain;
 
 public class BudgetVO extends CategoryVO {
 	private String budDate			= "";
-	private String budAmount		= "0";
+	private String budAmount	= "0";
 	private String budCategory	= "";
 	private String budType		= "";
 	

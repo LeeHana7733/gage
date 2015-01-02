@@ -46,7 +46,6 @@
 					<div class="col-sm-4"><button type="button" class="btn btn-default  amountMoney">금액 표시</button></div>
 					<div class="col-sm-4"><button type="button" class="btn btn-default amount">가능액 표시</button></div>
 				</c:otherwise>
-			
 			</c:choose>
 		</div>
 	</div>
