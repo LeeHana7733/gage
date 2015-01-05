@@ -35,10 +35,18 @@ public class BudgetServiceImpl implements BudgetService{
 		return budgetDao.budgetList(map);
 	}
 	@Override
-	public String budgetMerge(BudgetVO bud) {
+	public String budgetMerge(HashMap<String, String> map) {
 		// TODO Auto-generated method stub
+		if (budgetDao.budgetMerge(map) == 0)
+			return "예산 데이터가 추가가 실패하였습니다.";
+		else
+			return "예산 데이터가 추가 되었습니다.";
+	}
+	@Override
+	public String budgetCheck(HashMap<String, String> map) {
+		// TODO Auto-generated method stub
+		if (budgetDao.budgetCheck(map) == 1)
+			return	"예산 데이터가 이미 존재합니다."; 
 		return null;
 	}
-	
-
 }

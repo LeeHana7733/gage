@@ -56,9 +56,9 @@ var Modal	=
 											title	: "예산 카테고리 추가",
 											body	: {
 														'btn'	: {
-																		'전체예산' : {'className':'allBud'},
-																		'카테고리 기준' : {'className':'cateBud'},
-																		'세부 카테고리 기준' : {'className':'dtlCateBud'}
+																		'전체예산' : {'className':'addCategory allBud'},
+																		'카테고리 기준' : {'className':'addCategory cateBud'},
+																		'세부 카테고리 기준' : {'className':'addCategory dtlCateBud'}
 																	}
 														
 														}
@@ -75,7 +75,14 @@ var Modal	=
 														}
 											}
 									}
-						}
+						},
+						alertModal	:	function(bodyText){
+							return {
+											title	:  	'결과',
+											alertBody	: 	bodyText,
+											footer	:	[ '확인:btn-primary btn-close']
+									};		
+						},
 					}
 };
 var datePickerDefaults	= {

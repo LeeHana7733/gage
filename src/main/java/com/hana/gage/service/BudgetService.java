@@ -10,5 +10,6 @@ import com.hana.gage.domain.BudgetVO;
 public interface BudgetService {
 	public HashMap<String ,String> budTotalInfo(BudgetVO bud);
 	public List<HashMap<String ,String>> budgetList(HashMap<String,String> map);
-	public String	budgetMerge(BudgetVO bud);
+	public String	budgetMerge(HashMap<String, String> map);
+	public String budgetCheck(HashMap<String, String> map);
 }

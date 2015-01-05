@@ -27,8 +27,14 @@ public class BudgetDaoImpl implements BudgetDao {
 	}
 
 	@Override
-	public String budgetMerge(BudgetVO bud) {
+	public int budgetMerge(HashMap<String, String> map) {
 		// TODO Auto-generated method stub
-		return null;
+		return sqlSession.update("budget.budgetMerge",map);
+	}
+
+	@Override
+	public int budgetCheck(HashMap<String, String> map) {
+		// TODO Auto-generated method stub
+		return sqlSession.selectOne("budget.budgetCheck" , map);
 	}
 }

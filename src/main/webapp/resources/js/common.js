@@ -238,29 +238,8 @@ $(document).ready(function(){
 						dt.setYear(dt.getFullYear() - 1);
 					}
 				}
-				$.post("/budgetList", 
-						{
-							'budDate' : $.datepicker.formatDate('yy-mm-dd' , dt) , 
-							'budType' : $(".budgetType").data('type')
-						},
-						function (data){
-							$('#full_date').text(data.totalInfo.START_DATE+" ~ " +data.totalInfo.END_DATE).data("today" , data.totalInfo.TO_DAY);
-							$(".main").children().remove();
-							if (data.budgetList.length > 0){
-								$.each(data.budgetList, function ( i ,val){
-									$(".main").htmlAppend(val);
-								});
-							}else{
-								$(".main").append('	<div class="jumbotron">'+
-										  					'<div class="container">'+
-										  						'<p class="text-center">메뉴를 눌러 예산을 추가해 주세요</p>'+
-										  					'</div>'+
-										  				'</div>'
-										);
-							}
-						},
-						'json'
-				);
+				var dataP	= {'budDate' : $.datepicker.formatDate('yy-mm-dd' , dt) , 'budType' : $(".budgetType").data('type')};
+				$.budgetList(dataP);
 			}else{
 				var dt 	= new Date($('#full_date').text());
 				dt.setDate(1);
@@ -374,7 +353,6 @@ $(document).ready(function(){
 			}
 		});
 	};
-	
 	jQuery.fn.toggleText = function (value1, value2) {
 	    return this.each(function () {
 	        var $this = $(this),
@@ -387,12 +365,40 @@ $(document).ready(function(){
 	    });
 	};
 	
+	$.budgetList	= function(dataP){
+		$.post("/budgetList",
+				dataP,
+				function(data){
+					$('#full_date').text(data.totalInfo.START_DATE+" ~ " +data.totalInfo.END_DATE)
+					.data("today" , data.totalInfo.TO_DAY)
+					.data("start" , data.totalInfo.START_DATE)
+					.data("end" , data.totalInfo.END_DATE);
+					$(".main").children().remove();
+					if (data.budgetList.length > 0){
+						$.each(data.budgetList, function ( i ,val){
+							$(".main").htmlAppend(val);
+						});
+					}else{
+						$(".main").append('	<p><table class="table table-hover bottomLine">'+
+								'<tbody>'+
+									'<tr class="text-center">'+
+										'<td>메뉴를 눌러 예산을 추가해 주세요.</td>'+
+											'</tr>'+
+									'</tbody>'+
+							'</table>'	
+						);
+					}
+				},
+				'json');
+	};
+		
+		
 	jQuery.fn.htmlAppend	= function(val){
 		$(this).append('<table class="table table-hover bottomLine">'+
 				'<tbody>'+
 					'<tr>'+
 						'<td><strong>' + val.CATE_NAME +'</strong></td>'+
-						'<td>' + $.number(val.BUD_AMOUNT) +' 원</td>'+
+						'<td>' + val.BUD_AMOUNT+'</td>'+
 					'</tr>'+
 					'<tr>'+
 						'<td colspan="2">'+
@@ -404,19 +410,19 @@ $(document).ready(function(){
 						'</td>'+
 						'<tr  class="warning money">'+
 							'<td>금일 기준 적정 사용금액</td>'+
-							'<td>' + $.number(val.FAIR_VALUE) +' 원</td>'+
+							'<td>' + val.FAIR_VALUE + '</td>'+
 						'</tr>'+
 						'<tr  class="warning money">'+
 							'<td>현재 사용금액 (예정금액 포함)</td>'+
-							'<td>' + $.number(val.SUM_AMOUNT) +' 원</td>'+
+							'<td>' + val.SUM_AMOUNT + '</td>'+
 						'</tr>'+
 						'<tr  class="warning amountT">'+
 							'<td>이번 주 남은 예산(D-' + val.D_DAY+')</td>'+
-							'<td>' + $.number(val.REM_AMOUNT) +' 원</td>'+
+							'<td>' + val.REM_AMOUNT + '</td>'+
 						'</tr>'+
 						'<tr  class="warning amountT">'+
 							'<td>평균 하루 사용 가능 금액</td>'+
-							'<td>' + $.number(val.AVG_VALUE) +'원</td>'+
+							'<td>' + val.AVG_VALUE +'</td>'+
 						'</tr>'+
 					'</tbody>'+
 				'</table>');

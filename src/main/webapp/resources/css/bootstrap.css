@@ -41,7 +41,8 @@ audio:not([controls]) {
 }
 
 html {
-  font-family: "나눔손글씨 펜", NanumGothic, 나눔고딕, "Malgun Gothic", "맑은 고딕", sans-serif;
+  font-family:  NanumPen, "맑은 고딕", "Malgun Gothic", "나눔고딕", NanumGothic, "돋움", dotum, "Georgia Pro", Arial;
+  font-size: 15px;
   -webkit-text-size-adjust: 100%;
       -ms-text-size-adjust: 100%;
 }
@@ -302,7 +303,7 @@ html {
 }
 
 body {
-  font-family: "나눔손글씨 펜", NanumPen, "맑은 고딕", "Malgun Gothic", "나눔고딕", NanumGothic, "돋움", dotum, "Georgia Pro", Arial;
+  font-family:  NanumPen, "맑은 고딕", "Malgun Gothic", "나눔고딕", NanumGothic, "돋움", dotum, "Georgia Pro", Arial;
   font-size: 14px;
   line-height: 1.428571429;
   color: #333333;
